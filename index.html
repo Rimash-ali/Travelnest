@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO Meta Tags -->
+    <title>TravelNest - Explore Destinations, Plan Budgets & Track Trips</title>
+    <meta
+      name="description"
+      content="Discover stunning travel destinations, calculate budget structures, get random trip recommendations, and organize your dream itinerary in one visual hub."
+    />
+    <meta
+      name="keywords"
+      content="travel, trip planner, travel budget, travel goals, destination search, travel mood"
+    />
+    <meta name="author" content="COMP40053 Student" />
+
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./assets/icons/logo.png" />
+
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+
+    <!-- Home-specific CSS styles -->
+    <style>
+      /* Hero Grid Layout */
+      .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 48px;
+        align-items: center;
+        padding: 60px 0;
+        min-height: calc(80vh - 80px);
+      }
+
+      .hero-text {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      .hero-tag {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent-blue);
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+        line-height: 1.15;
+        font-weight: 800;
+      }
+
+      /* Quote Carousel Slider styles */
+      .quote-slider-container {
+        background: #ffffff;
+        border-left: 4px solid var(--accent-blue);
+        padding: 16px 24px;
+        border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 12px;
+        transition: opacity 0.5s ease-in-out;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .quote-text {
+        font-size: 1.1rem;
+        font-style: italic;
+        font-weight: 500;
+        color: var(--text-dark);
+        margin-bottom: 6px;
+      }
+
+      .quote-author {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .hero-img-wrap {
+        position: relative;
+      }
+
+      .hero-img {
+        width: 100%;
+        border-radius: var(--border-radius-lg);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        object-fit: cover;
+        height: 480px;
+      }
+
+      .hero-img-overlay {
+        position: absolute;
+        bottom: -20px;
+        left: -20px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        padding: 16px 24px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid var(--border-color);
+      }
+
+      .hero-img-overlay span {
+        font-size: 1.8rem;
+      }
+
+      .hero-img-overlay-text h4 {
+        font-size: 0.95rem;
+        color: var(--primary-color);
+      }
+
+      .hero-img-overlay-text p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      /* Destination of the Day section styling */
+      .dod-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        transition: var(--transition-smooth);
+        margin-top: 24px;
+      }
+
+      .dod-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-4px);
+      }
+
+      .dod-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        min-height: 380px;
+      }
+
+      .dod-content {
+        padding: 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .dod-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--accent-coral);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        align-self: flex-start;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .dod-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+      }
+
+      .dod-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .dod-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .dod-desc {
+        color: var(--text-muted);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 32px;
+      }
+
+      .feature-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        padding: 32px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        transition: var(--transition-smooth);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-blue);
+      }
+
+      .feature-icon-box {
+        width: 54px;
+        height: 54px;
+        border-radius: var(--border-radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+
+      .feat-blue {
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--accent-blue);
+      }
+
+      .feat-teal {
+        background: rgba(20, 184, 166, 0.1);
+        color: var(--accent-teal);
+      }
+
+      .feat-coral {
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--accent-coral);
+      }
+
+      .feature-card h3 {
+        font-size: 1.25rem;
+      }
+
+      .feature-card p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .feature-link {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--accent-blue);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: auto;
+      }
+
+      .feature-link:hover i {
+        transform: translateX(4px);
+        transition: transform var(--transition-fast);
+      }
+
+      /* Tablet and mobile overrides for home */
+      @media screen and (max-width: 992px) {
+        .hero {
+          grid-template-columns: 1fr;
+          text-align: center;
+          gap: 40px;
+          padding: 40px 0;
+        }
+        .hero-title {
+          font-size: 2.6rem;
+        }
+        .quote-slider-container {
+          border-left: none;
+          border-top: 4px solid var(--accent-blue);
+          border-radius: var(--border-radius-md);
+        }
+        .hero-img-wrap {
+          max-width: 500px;
+          margin: 0 auto;
+          width: 100%;
+        }
+        .hero-img {
+          height: 350px;
+        }
+        .dod-card {
+          grid-template-columns: 1fr;
+        }
+        .dod-img {
+          min-height: 250px;
+          height: 250px;
+        }
+        .dod-content {
+          padding: 24px;
+        }
+        .dod-title {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="container navbar">
+        <a href="./index.html" class="navbar-brand" id="nav-brand-logo">
+          <img
+            src="./assets/icons/logo.png"
+            alt="TravelNest Logo"
+            class="navbar-logo"
+          />
+          <span class="navbar-title">TravelNest</span>
+        </a>
+
+        <!-- Hamburger Menu Trigger -->
+        <button
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          id="burger-btn"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navigation Links -->
+        <nav class="navbar-menu" id="nav-menu">
+          <a href="./index.html" class="navbar-item">Home</a>
+          <a href="./pages/explorer.html" class="navbar-item">Explorer</a>
+          <a href="./pages/budget.html" class="navbar-item">Budget Planner</a>
+          <a href="./pages/generator.html" class="navbar-item"
+            >Trip Generator</a
+          >
+          <a href="./pages/mood.html" class="navbar-item">Travel Mood</a>
+          <a href="./pages/feedback.html" class="navbar-item"
+            >Feedback & Support</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section class="section">
+        <div class="container hero">
+          <div class="hero-text">
+            <span class="hero-tag">Aesthetic Trip Planning</span>
+            <h1 class="hero-title">Your Next Adventure Starts Right Here.</h1>
+            <p class="hero-description text-muted">
+              Plan budgets, explore dynamic destination highlights, play calming
+              ambient travel sounds, and create personalized travel logs with
+              TravelNest—your visual planning notebook.
+            </p>
+
+            <!-- Auto-rotating Quotes Box -->
+            <div
+              class="quote-slider-container"
+              id="quote-slider"
+              aria-live="polite"
+            >
+              <p class="quote-text">"Loading inspiration..."</p>
+              <p class="quote-author">- Loading</p>
+            </div>
+
+            <div
+              style="
+                margin-top: 12px;
+                display: flex;
+                gap: 16px;
+                justify-content: inherit;
+              "
+            >
+              <a href="./pages/explorer.html" class="btn btn-primary"
+                >Start Exploring</a
+              >
+              <a href="./pages/budget.html" class="btn btn-outline"
+                >Calculate Budget</a
+              >
+            </div>
+          </div>
+
+          <div class="hero-img-wrap">
+            <img
+              src="assets/hero.jpg"
+              alt="Beautiful lakeside landscape"
+              class="hero-img"
+            />
+            <div class="hero-img-overlay">
+              <div class="hero-img-overlay-text">
+                <h4>Ready to wander?</h4>
+                <p>Explore curated locations globally.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Destination of the Day Section -->
+      <section class="section section-bg-alt">
+        <div class="container">
+          <div class="section-title-wrap reveal-on-scroll">
+            <span class="section-subtitle">Today's Spotlight</span>
+            <h2 class="section-title">Destination of the Day</h2>
+          </div>
+
+          <!-- Rendered Daily using JS -->
+          <div id="dod-container" class="reveal-on-scroll">
+            <!-- Loading placeholder -->
+            <div
+              style="
+                text-align: center;
+                padding: 40px;
+                color: var(--text-muted);
+              "
+            >
+              <div class="spinner" style="margin: 0 auto 12px; width: 32px; height: 32px; border: 3px solid rgba(14,165,233,0.1); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+              <p>Selecting today's perfect escape...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Explore Features Section -->
+      <section class="section">
+        <div class="container">
+          <div class="section-title-wrap reveal-on-scroll">
+            <span class="section-subtitle">Planning Suite</span>
+            <h2 class="section-title">Designed for Dreamers and Planners</h2>
+          </div>
+
+          <div class="features-grid">
+            <!-- Card 1 -->
+            <div class="feature-card reveal-on-scroll">
+              <div class="feature-icon-box feat-blue" style="display:flex;align-items:center;justify-content:center;">
+                <img src="assets/icons/explorer.png" alt="Explorer Icon" style="width:24px;height:24px;object-fit:contain;">
+              </div>
+              <h3>Destination Explorer</h3>
+              <p>
+                Browse beautiful locations globally, filtered by continent or
+                search queries. Access details, popular attractions, and costs
+                instantly.
+              </p>
+              <a href="./pages/explorer.html" class="feature-link"
+                >Explore Map →</a
+              >
+            </div>
+
+            <!-- Card 2 -->
+            <div class="feature-card reveal-on-scroll">
+              <div class="feature-icon-box feat-teal" style="display:flex;align-items:center;justify-content:center;">
+                <img src="assets/icons/budget.png" alt="Budget Icon" style="width:24px;height:24px;object-fit:contain;">
+              </div>
+              <h3>Trip Budget Planner</h3>
+              <p>
+                Input your duration and daily allowance. Get total estimates and
+                budget status ranks, shown on a progress bar counter.
+              </p>
+              <a href="./pages/budget.html" class="feature-link"
+                >Plan Budget →</a
+              >
+            </div>
+
+            <!-- Card 3 -->
+            <div class="feature-card reveal-on-scroll">
+              <div class="feature-icon-box feat-coral" style="display:flex;align-items:center;justify-content:center;">
+                <img src="assets/icons/generator.png" alt="Generator Icon" style="width:24px;height:24px;object-fit:contain;">
+              </div>
+              <h3>Random Trip Generator</h3>
+              <p>
+                Feeling spontaneous? Select your preferred travel vibe and
+                budget level, and let our engine select a surprise trip.
+              </p>
+              <a href="./pages/generator.html" class="feature-link"
+                >Surprise Me →</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-logo-desc">
+            <span class="footer-logo">TravelNest</span>
+            <p class="footer-desc">
+              A premium, multi-page client-side application for managing travel
+              plans, budgets, and ambient soundtracks. Built with advanced
+              vanilla Web standards.
+            </p>
+          </div>
+
+          <div class="footer-links-wrap">
+            <h3 class="footer-links-title">Quick Links</h3>
+            <ul class="footer-links-list">
+              <li><a href="./index.html" class="footer-link">Home</a></li>
+              <li>
+                <a href="./pages/explorer.html" class="footer-link"
+                  >Destination Explorer</a
+                >
+              </li>
+              <li>
+                <a href="./pages/budget.html" class="footer-link"
+                  >Trip Budget Planner</a
+                >
+              </li>
+              <li>
+                <a href="./pages/generator.html" class="footer-link"
+                  >Trip Generator</a
+                >
+              </li>
+              <li>
+                <a href="./pages/mood.html" class="footer-link">Travel Mood</a>
+              </li>
+              <li>
+                <a href="./pages/feedback.html" class="footer-link"
+                  >Feedback Support</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-newsletter-wrap">
+            <h3 class="footer-links-title">Travel Inspiration</h3>
+            <p class="footer-desc" style="margin-bottom: 8px">
+              Subscribe to receive handpicked travel inspiration and daily spot
+              highlights.
+            </p>
+            <form class="footer-newsletter-form" id="newsletter-form">
+              <input
+                type="email"
+                placeholder="Your Email Address"
+                class="footer-newsletter-input"
+                required
+                id="newsletter-email"
+              />
+              <button type="submit" class="btn btn-primary btn-sm">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            &copy; 2026 TravelNest. All Rights Reserved. Built for COMP40053
+            Assignment 3.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Core Javascript imports -->
+    <script src="./js/data.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/home.js"></script>
+  </body>
+</html>

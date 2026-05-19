@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO Meta Tags -->
+    <title>Random Trip Generator - TravelNest</title>
+    <meta
+      name="description"
+      content="Let our travel engine select your next destination based on budget categories and travel styles. Save options to your wishlist."
+    />
+    <meta
+      name="keywords"
+      content="trip generator, surprise travel, random destination, vacation planner"
+    />
+    <meta name="author" content="COMP40053 Student" />
+
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/icons/logo.png" />
+
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+
+    <!-- Page-specific styles -->
+    <style>
+      .generator-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 60px;
+        align-items: start;
+      }
+
+      .filter-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        padding: 32px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Surprise Me Again Button & Custom Animations */
+      .btn-surprise {
+        font-size: 1.1rem;
+        padding: 14px 28px;
+        background: var(--accent-coral);
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .btn-surprise:hover {
+        background: #d97706;
+      }
+
+      .btn-surprise:active {
+        background: #b45309;
+      }
+
+      .btn-surprise i {
+        font-size: 1.25rem;
+        transition: transform 0.6s ease;
+      }
+
+      .btn-surprise:hover i {
+        transform: rotate(360deg);
+      }
+
+      /* Loader Panel styles */
+      .loader-box {
+        display: none; /* Controlled by JS */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 60px 20px;
+        text-align: center;
+      }
+
+      .spinner-ring {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(14, 165, 233, 0.1);
+        border-left-color: var(--accent-blue);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      /* Result Card styling */
+      .result-destination-card {
+        display: none; /* Controlled by JS */
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .result-img-box {
+        position: relative;
+        height: 240px;
+      }
+
+      .result-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .result-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: var(--accent-coral);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .result-fallback-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(4px);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .result-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .result-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+
+      .result-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .result-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      /* Wishlist Styles */
+      .wishlist-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .wishlist-item {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-sm);
+        padding: 12px 16px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition-smooth);
+      }
+
+      .wishlist-item:hover {
+        border-color: var(--accent-coral);
+        transform: translateX(4px);
+      }
+
+      .wishlist-details {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .wishlist-thumb {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        object-fit: cover;
+      }
+
+      .wishlist-info h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+
+      .wishlist-info p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .wishlist-delete {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 6px;
+        border-radius: 50%;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .wishlist-delete:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.08);
+      }
+
+      .wishlist-empty {
+        text-align: center;
+        padding: 30px;
+        color: var(--text-muted);
+        border: 1px dashed var(--border-color);
+        border-radius: var(--border-radius-sm);
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .wishlist-empty .empty-heart {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
+
+      @media screen and (max-width: 992px) {
+        .generator-wrapper {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="container navbar">
+        <a href="../index.html" class="navbar-brand" id="nav-brand-logo">
+          <img
+            src="../assets/icons/logo.png"
+            alt="TravelNest Logo"
+            class="navbar-logo"
+          />
+          <span class="navbar-title">TravelNest</span>
+        </a>
+
+        <!-- Hamburger Menu Trigger -->
+        <button
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          id="burger-btn"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navigation Links -->
+        <nav class="navbar-menu" id="nav-menu">
+          <a href="../index.html" class="navbar-item">Home</a>
+          <a href="./explorer.html" class="navbar-item">Explorer</a>
+          <a href="./budget.html" class="navbar-item">Budget Planner</a>
+          <a href="./generator.html" class="navbar-item">Trip Generator</a>
+          <a href="./mood.html" class="navbar-item">Travel Mood</a>
+          <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content">
+      <section class="section">
+        <div class="container">
+          <div class="section-title-wrap">
+            <span class="section-subtitle">Spontaneous Planner</span>
+            <h1 class="section-title">Random Trip Generator</h1>
+          </div>
+
+          <div class="generator-wrapper">
+            <!-- Generator Options Section -->
+            <div class="filter-card reveal-on-scroll">
+              <h2
+                style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px"
+              >
+                Match Your Travel Vibe
+              </h2>
+              <p
+                style="
+                  font-size: 0.9rem;
+                  color: var(--text-muted);
+                  margin-bottom: 12px;
+                "
+              >
+                Choose your preferences, click generate, and let us reveal a
+                handpicked wanderlust destination.
+              </p>
+
+              <div class="form-group">
+                <label for="gen-type" class="form-label"
+                  >Preferred Travel Type</label
+                >
+                <select id="gen-type" class="form-select">
+                  <option value="adventure">
+                    Adventure (hikes, climbs, water sports)
+                  </option>
+                  <option value="relaxation">
+                    Relaxation (beaches, spas, retreats)
+                  </option>
+                  <option value="cultural">
+                    Cultural (museums, ruins, food tours)
+                  </option>
+                  <option value="nature">
+                    Nature (volcanoes, national parks, lakes)
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="gen-budget" class="form-label"
+                  >Ideal Budget Level</label
+                >
+                <select id="gen-budget" class="form-select">
+                  <option value="low">
+                    Low Budget (under $60/day daily average)
+                  </option>
+                  <option value="medium">
+                    Medium Budget ($60 to $200/day daily average)
+                  </option>
+                  <option value="high">
+                    High Budget (over $200/day daily average)
+                  </option>
+                </select>
+              </div>
+
+              <button class="btn btn-surprise" id="gen-surprise-btn">
+                Surprise Me Again
+              </button>
+
+              <!-- Loading Indicator Animation -->
+              <div class="loader-box" id="gen-loader">
+                <div class="spinner-ring"></div>
+                <p style="font-weight: 600; color: var(--accent-blue)">
+                  Consulting the oracle of destinations...
+                </p>
+              </div>
+
+              <!-- Result Card Panel -->
+              <div class="result-destination-card" id="gen-result-card">
+                <div class="result-img-box">
+                  <img
+                    src=""
+                    alt=""
+                    class="result-img"
+                    id="result-img"
+                    onerror="this.src = '../assets/placeholder.jpg'"
+                  />
+                  <span class="result-badge" id="result-type-badge"
+                    >Adventure</span
+                  >
+                  <span
+                    class="result-fallback-badge"
+                    id="result-fallback-badge"
+                    style="display: none"
+                    >Vibe Recommendation</span
+                  >
+                </div>
+                <div class="result-body">
+                  <h3 class="result-title" id="result-title">Kyoto, Japan</h3>
+                  <div class="result-meta">
+                    <span id="result-continent"> Asia</span>
+                    <span id="result-budget"> Medium Budget</span>
+                  </div>
+                  <p
+                    id="result-description"
+                    style="
+                      font-size: 0.92rem;
+                      color: var(--text-dark);
+                      line-height: 1.6;
+                    "
+                  ></p>
+
+                  <div class="result-actions">
+                    <button
+                      class="btn btn-primary"
+                      id="add-wishlist-btn"
+                      style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;"
+                    >
+                      <img src="../assets/icons/heart-outline.png" alt="Heart" style="width:14px;height:14px;object-fit:contain;">
+                      Add to Wishlist
+                    </button>
+                    <a
+                      href=""
+                      class="btn btn-outline"
+                      id="explorer-link-btn"
+                      style="flex: 1; padding: 10px"
+                    >
+                      View Details →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wishlist Sidebar Section -->
+            <div class="reveal-on-scroll">
+              <h2
+                style="font-size: 1.4rem; font-weight: 800; margin-bottom: 24px"
+              >
+                My Travel Wishlist
+              </h2>
+
+              <div class="wishlist-container" id="wishlist-container">
+                <!-- Rendered dynamically by JS -->
+                <div class="wishlist-empty">
+                  <div class="empty-heart" style="display:flex;justify-content:center;margin-bottom:12px;">
+                    <img src="../assets/icons/heart-outline.png" alt="Empty Wishlist" style="width:48px;height:48px;object-fit:contain;">
+                  </div>
+                  <p>
+                    Your wishlist is empty. Generate a trip and click "Add to
+                    Wishlist" to save it.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-logo-desc">
+            <span class="footer-logo">TravelNest</span>
+            <p class="footer-desc">
+              A premium, multi-page client-side application for managing travel
+              plans, budgets, and ambient soundtracks. Built with advanced
+              vanilla Web standards.
+            </p>
+          </div>
+
+          <div class="footer-links-wrap">
+            <h3 class="footer-links-title">Quick Links</h3>
+            <ul class="footer-links-list">
+              <li><a href="../index.html" class="footer-link">Home</a></li>
+              <li>
+                <a href="./explorer.html" class="footer-link"
+                  >Destination Explorer</a
+                >
+              </li>
+              <li>
+                <a href="./budget.html" class="footer-link"
+                  >Trip Budget Planner</a
+                >
+              </li>
+              <li>
+                <a href="./generator.html" class="footer-link"
+                  >Trip Generator</a
+                >
+              </li>
+              <li><a href="./mood.html" class="footer-link">Travel Mood</a></li>
+              <li>
+                <a href="./feedback.html" class="footer-link"
+                  >Feedback Support</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-newsletter-wrap">
+            <h3 class="footer-links-title">Travel Inspiration</h3>
+            <p class="footer-desc" style="margin-bottom: 8px">
+              Subscribe to receive handpicked travel inspiration and daily spot
+              highlights.
+            </p>
+            <form class="footer-newsletter-form" id="newsletter-form">
+              <input
+                type="email"
+                placeholder="Your Email Address"
+                class="footer-newsletter-input"
+                required
+                id="newsletter-email"
+              />
+              <button type="submit" class="btn btn-primary btn-sm">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            &copy; 2026 TravelNest. All Rights Reserved. Built for COMP40053
+            Assignment 3.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Javascript imports -->
+    <script src="../js/data.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/generator.js"></script>
+  </body>
+</html>

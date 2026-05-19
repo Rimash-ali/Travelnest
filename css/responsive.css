@@ -1,0 +1,114 @@
+/* responsive media queries for TravelNest */
+/* handles tablet and mobile layout changes */
+
+@media screen and (max-width: 992px) {
+
+  /* footer changes to two column on tablet */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  
+  .footer-logo-desc {
+    grid-column: span 2;
+  }
+
+  .section {
+    padding: 40px 0;
+  }
+
+  .section-title {
+    font-size: 1.7rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* mobile nav - show burger button */
+  .navbar-burger {
+    display: flex;
+  }
+
+  /* mobile nav menu - drops down from header */
+  .navbar-menu {
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 30px 20px;
+    border-top: 1px solid var(--border-color);
+    z-index: 999;
+  }
+
+  body.dark-mode .navbar-menu {
+    background: #1e293b;
+  }
+
+  /* this class added by javascript to toggle menu */
+  .navbar-menu.is-active {
+    display: flex;
+  }
+
+  .navbar-item {
+    font-size: 1.1rem;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    border-bottom: none;
+  }
+
+  /* keep footer single column on mobile */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-logo-desc {
+    grid-column: span 1;
+  }
+
+  /* newsletter form stacks on mobile */
+  .footer-newsletter-form {
+    flex-direction: column;
+  }
+
+  /* standard padding on mobile */
+  .main-content {
+    padding-top: 80px;
+  }
+  
+  .section {
+    padding: 30px 0;
+  }
+
+  /* smaller modal on mobile */
+  .modal-content {
+    width: calc(100% - 16px);
+    max-height: 90vh;
+  }
+
+  .modal-header, .modal-body {
+    padding: 14px;
+  }
+
+  /* tables on mobile */
+  .custom-table th, .custom-table td {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+}
+
+/* extra small screens */
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 0 14px;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+  }
+}

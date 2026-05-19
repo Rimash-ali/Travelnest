@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO Meta Tags -->
+    <title>Destination Explorer - TravelNest</title>
+    <meta
+      name="description"
+      content="Search and filter beautiful global travel destinations, view costs, local recipes, and holiday workouts."
+    />
+    <meta
+      name="keywords"
+      content="destinations, travel search, travel guide, travel explorer"
+    />
+    <meta name="author" content="COMP40053 Student" />
+
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/icons/logo.png" />
+
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+
+    <!-- Page-specific styles -->
+    <style>
+      /* Filter Interface */
+      .filter-container {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        padding: 24px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        margin-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .search-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+      }
+
+      .search-input-wrapper {
+        position: relative;
+      }
+
+      .search-input-wrapper .search-emoji {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .search-input-wrapper input {
+        padding-left: 44px;
+      }
+
+      /* Pill buttons for Continent filtering */
+      .filter-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        background: rgba(14, 165, 233, 0.04);
+        border: 1px solid var(--border-color);
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--text-dark);
+        transition: var(--transition-smooth);
+      }
+
+      .pill:hover {
+        background: rgba(14, 165, 233, 0.1);
+        color: var(--accent-blue);
+        border-color: var(--accent-blue);
+      }
+
+      .pill.is-active {
+        background: var(--accent-blue);
+        color: #fff;
+        border-color: var(--accent-blue);
+        box-shadow: 0 4px 10px rgba(14, 165, 233, 0.25);
+      }
+
+      /* Cards Grid */
+      .explorer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 32px;
+        margin-bottom: 60px;
+      }
+
+      .dest-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        transition: var(--transition-smooth);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      .dest-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-blue);
+      }
+
+      .dest-img-box {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+      }
+
+      .dest-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-smooth);
+      }
+
+      .dest-card:hover .dest-card-img {
+        transform: scale(1.08);
+      }
+
+      .dest-type-badge {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(2, 6, 23, 0.85);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .dest-info {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 12px;
+      }
+
+      .dest-card-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+      }
+
+      .dest-card-meta {
+        display: flex;
+        gap: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .dest-card-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .dest-card-desc {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .dest-card-footer {
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--accent-blue);
+      }
+
+      /* Modal Spec Details */
+      .modal-img {
+        height: 280px;
+        width: 100%;
+        object-fit: cover;
+        border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+      }
+
+      .modal-section-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-top: 24px;
+        margin-bottom: 12px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary-color);
+      }
+
+      .attractions-list {
+        list-style-position: inside;
+        padding-left: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .attractions-list li {
+        color: var(--text-dark);
+        font-size: 0.95rem;
+      }
+
+      /* Grid for recipes & workouts inside modal */
+      .spec-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 24px;
+      }
+
+      .spec-card {
+        background: rgba(14, 165, 233, 0.03);
+        border: 1px solid rgba(14, 165, 233, 0.15);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+      }
+
+      .spec-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--accent-blue);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .spec-meta {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .spec-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 60px 0;
+        color: var(--text-muted);
+        grid-column: 1 / -1;
+      }
+
+      .no-results i {
+        font-size: 3rem;
+        color: var(--border-color);
+        margin-bottom: 16px;
+      }
+
+      @media screen and (max-width: 768px) {
+        .search-row {
+          grid-template-columns: 1fr;
+        }
+        .spec-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="container navbar">
+        <a href="../index.html" class="navbar-brand" id="nav-brand-logo">
+          <img
+            src="../assets/icons/logo.png"
+            alt="TravelNest Logo"
+            class="navbar-logo"
+          />
+          <span class="navbar-title">TravelNest</span>
+        </a>
+
+        <!-- Hamburger Menu Trigger -->
+        <button
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          id="burger-btn"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navigation Links -->
+        <nav class="navbar-menu" id="nav-menu">
+          <a href="../index.html" class="navbar-item">Home</a>
+          <a href="./explorer.html" class="navbar-item">Explorer</a>
+          <a href="./budget.html" class="navbar-item">Budget Planner</a>
+          <a href="./generator.html" class="navbar-item">Trip Generator</a>
+          <a href="./mood.html" class="navbar-item">Travel Mood</a>
+          <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content">
+      <section class="section">
+        <div class="container">
+          <div class="section-title-wrap">
+            <span class="section-subtitle">Global Directory</span>
+            <h1 class="section-title">Destination Explorer</h1>
+          </div>
+
+          <!-- Filter and Search Interface -->
+          <div class="filter-container reveal-on-scroll">
+            <div class="search-row">
+              <div class="search-input-wrapper">
+                <span class="search-emoji" style="display:flex;align-items:center;">
+                  <img src="../assets/icons/search-icon.png" alt="Search Icon" style="width:16px;height:16px;object-fit:contain;">
+                </span>
+                <input
+                  type="text"
+                  id="search-name"
+                  class="form-input"
+                  placeholder="Search destinations by name or country..."
+                />
+              </div>
+
+              <div>
+                <select id="select-type" class="form-select">
+                  <option value="all">All Experiences</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="relaxation">Relaxation</option>
+                  <option value="cultural">Cultural</option>
+                  <option value="nature">Nature</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Continent Pill Filters -->
+            <div class="filter-pills" id="continent-pills">
+              <button class="pill is-active" data-continent="all">
+                All Continents
+              </button>
+              <button class="pill" data-continent="Asia">Asia</button>
+              <button class="pill" data-continent="Europe">Europe</button>
+              <button class="pill" data-continent="Africa">Africa</button>
+              <button class="pill" data-continent="North America">
+                North America
+              </button>
+              <button class="pill" data-continent="South America">
+                South America
+              </button>
+              <button class="pill" data-continent="Oceania">Oceania</button>
+            </div>
+          </div>
+
+          <!-- Destination Grid -->
+          <div class="explorer-grid" id="explorer-grid">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Details Modal -->
+    <div class="modal" id="details-modal">
+      <div class="modal-content">
+        <div style="position: relative">
+          <img id="modal-img" src="" alt="" class="modal-img" />
+          <button
+            class="modal-close"
+            id="modal-close-btn"
+            style="
+              position: absolute;
+              top: 16px;
+              right: 16px;
+              background: rgba(255, 255, 255, 0.9);
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+              border: none;
+            "
+          >
+            &times;
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <h2 class="modal-title" id="modal-title">Kyoto, Japan</h2>
+            <div class="dod-meta" id="modal-meta" style="font-size: 0.85rem">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <h3 class="modal-section-title">About Destination</h3>
+          <p
+            id="modal-desc"
+            style="
+              color: var(--text-dark);
+              line-height: 1.7;
+              font-size: 0.95rem;
+            "
+          ></p>
+
+          <h3 class="modal-section-title">Popular Attractions</h3>
+          <ul class="attractions-list" id="modal-attractions">
+            <!-- Rendered by JS -->
+          </ul>
+
+          <h3 class="modal-section-title">Daily Travel Cost Estimation</h3>
+          <div class="table-wrapper">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Tier</th>
+                  <th>Accommodation</th>
+                  <th>Food & Drinks</th>
+                  <th>Local Transit</th>
+                  <th>Daily Total</th>
+                </tr>
+              </thead>
+              <tbody id="modal-costs-tbody">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Curricular Spec Sections: Recipe and Workout Data -->
+          <div class="spec-grid">
+            <!-- Recipe Card -->
+            <div class="spec-card">
+              <h4 class="spec-card-title">Local Culinary Recipe</h4>
+              <p class="spec-meta" id="modal-recipe-name">
+                Traditional Matcha Dango
+              </p>
+              <p
+                class="spec-text"
+                style="font-style: italic; margin-bottom: 6px"
+              >
+                Difficulty: <span id="modal-recipe-diff"></span> | Prep:
+                <span id="modal-recipe-prep"></span>
+              </p>
+              <p class="spec-text" id="modal-recipe-desc"></p>
+            </div>
+
+            <!-- Workout Card -->
+            <div class="spec-card">
+              <h4 class="spec-card-title">Destination Active Excursion</h4>
+              <p class="spec-meta" id="modal-workout-name">
+                Mountain Pilgrimage Hike
+              </p>
+              <p
+                class="spec-text"
+                style="font-style: italic; margin-bottom: 6px"
+              >
+                Intensity: <span id="modal-workout-intensity"></span> |
+                Calories: ~<span id="modal-workout-calories"></span> kcal
+              </p>
+              <p class="spec-text" id="modal-workout-desc"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-logo-desc">
+            <span class="footer-logo">TravelNest</span>
+            <p class="footer-desc">
+              A premium, multi-page client-side application for managing travel
+              plans, budgets, and ambient soundtracks. Built with advanced
+              vanilla Web standards.
+            </p>
+          </div>
+
+          <div class="footer-links-wrap">
+            <h3 class="footer-links-title">Quick Links</h3>
+            <ul class="footer-links-list">
+              <li><a href="../index.html" class="footer-link">Home</a></li>
+              <li>
+                <a href="./explorer.html" class="footer-link"
+                  >Destination Explorer</a
+                >
+              </li>
+              <li>
+                <a href="./budget.html" class="footer-link"
+                  >Trip Budget Planner</a
+                >
+              </li>
+              <li>
+                <a href="./generator.html" class="footer-link"
+                  >Trip Generator</a
+                >
+              </li>
+              <li><a href="./mood.html" class="footer-link">Travel Mood</a></li>
+              <li>
+                <a href="./feedback.html" class="footer-link"
+                  >Feedback Support</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-newsletter-wrap">
+            <h3 class="footer-links-title">Travel Inspiration</h3>
+            <p class="footer-desc" style="margin-bottom: 8px">
+              Subscribe to receive handpicked travel inspiration and daily spot
+              highlights.
+            </p>
+            <form class="footer-newsletter-form" id="newsletter-form">
+              <input
+                type="email"
+                placeholder="Your Email Address"
+                class="footer-newsletter-input"
+                required
+                id="newsletter-email"
+              />
+              <button type="submit" class="btn btn-primary btn-sm">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            &copy; 2026 TravelNest. All Rights Reserved. Built for COMP40053
+            Assignment 3.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Javascript imports -->
+    <script src="../js/data.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/explorer.js"></script>
+  </body>
+</html>

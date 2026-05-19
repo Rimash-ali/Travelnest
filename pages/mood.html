@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>Travel Mood & Tracker - TravelNest</title>
+  <meta name="description" content="Immerse yourself in travel with relaxing ambient sounds and track your visited and planned global destinations.">
+  <meta name="keywords" content="ambient sound, relaxation, travel mood, travel tracker, visited destinations">
+  <meta name="author" content="COMP40053 Student">
+  
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/icons/logo.png">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  
+  <!-- Page-specific styles -->
+  <style>
+    .mood-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+    
+    /* Ambient Sounds Row */
+    .sounds-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    
+    .sound-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius-md);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+    
+    .sound-card.is-playing {
+      border-color: var(--accent-blue);
+      box-shadow: var(--card-shadow-hover);
+      background: rgba(14, 165, 233, 0.01);
+    }
+    
+    .sound-icon-box {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: rgba(14, 165, 233, 0.05);
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      transition: var(--transition-smooth);
+    }
+    
+    .sound-card.is-playing .sound-icon-box {
+      background: var(--accent-blue);
+      color: white;
+      transform: scale(1.02);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* CSS Equalizer Animation */
+    .equalizer {
+      display: none; /* Only visible when playing */
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+      margin-top: 8px;
+    }
+    
+    .sound-card.is-playing .equalizer {
+      display: flex;
+    }
+    
+    .eq-bar {
+      width: 3px;
+      height: 100%;
+      background-color: var(--accent-blue);
+      border-radius: 3px;
+      animation: bounceEqualizer 0.8s ease-in-out infinite alternate;
+    }
+    
+    .eq-bar:nth-child(1) { animation-delay: 0.1s; animation-duration: 0.6s; }
+    .eq-bar:nth-child(2) { animation-delay: 0.3s; animation-duration: 0.9s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.0s; animation-duration: 0.5s; }
+    .eq-bar:nth-child(4) { animation-delay: 0.4s; animation-duration: 0.8s; }
+    .eq-bar:nth-child(5) { animation-delay: 0.2s; animation-duration: 0.7s; }
+    
+    @keyframes bounceEqualizer {
+      0% { height: 3px; }
+      100% { height: 20px; }
+    }
+    
+    /* Tracker Dashboard */
+    .tracker-dashboard {
+      background: var(--card-bg);
+      border-radius: var(--border-radius-md);
+      padding: 32px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-color);
+      margin-top: 20px;
+    }
+    
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      text-align: center;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 24px;
+    }
+    
+    .stat-box h4 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      line-height: 1.2;
+    }
+    
+    .stat-box p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Destination Tracker List */
+    .tracker-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    
+    .tracker-item {
+      background: var(--card-bg);
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      transition: var(--transition-smooth);
+    }
+    
+    .tracker-item:hover {
+      box-shadow: var(--card-shadow);
+      border-color: var(--border-color);
+    }
+    
+    .tracker-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--border-radius-sm);
+      object-fit: cover;
+    }
+    
+    .tracker-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .tracker-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    
+    .tracker-country {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    .tracker-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-track {
+      background: none;
+      border: 1px solid var(--border-color);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: var(--transition-fast);
+      color: #94a3b8;
+    }
+    
+    .btn-track-visited:hover, .btn-track-visited.active {
+      background: rgba(16, 185, 129, 0.08);
+      color: #10b981;
+      border-color: #10b981;
+    }
+    
+    .btn-track-visited.active {
+      background: #10b981;
+      color: white;
+    }
+    
+    .btn-track-planned:hover, .btn-track-planned.active {
+      background: rgba(59, 130, 246, 0.08);
+      color: #3b82f6;
+      border-color: #3b82f6;
+    }
+    
+    .btn-track-planned.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    @media screen and (max-width: 768px) {
+      .sounds-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container navbar">
+      <a href="../index.html" class="navbar-brand" id="nav-brand-logo">
+        <img src="../assets/icons/logo.png" alt="TravelNest Logo" class="navbar-logo">
+        <span class="navbar-title">TravelNest</span>
+      </a>
+      
+      <!-- Hamburger Menu Trigger -->
+      <button class="navbar-burger" aria-label="menu" aria-expanded="false" id="burger-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <!-- Navigation Links -->
+      <nav class="navbar-menu" id="nav-menu">
+        <a href="../index.html" class="navbar-item">Home</a>
+        <a href="./explorer.html" class="navbar-item">Explorer</a>
+        <a href="./budget.html" class="navbar-item">Budget Planner</a>
+        <a href="./generator.html" class="navbar-item">Trip Generator</a>
+        <a href="./mood.html" class="navbar-item">Travel Mood</a>
+        <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <section class="section">
+      <div class="container">
+        
+        <div class="section-title-wrap">
+          <span class="section-subtitle">Mindful Travels</span>
+          <h1 class="section-title">Travel Mood & Tracker</h1>
+        </div>
+        
+        <div class="mood-container">
+          
+          <!-- Ambient Sound Section -->
+          <div class="reveal-on-scroll">
+            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 24px;">Ambient Travel Sounds</h2>
+            
+            <div class="sounds-grid">
+              
+              <!-- Sound 1: Beach -->
+              <div class="sound-card" id="sound-card-beach">
+                <div class="sound-icon-box" style="display:flex;align-items:center;justify-content:center;">
+                  <img src="../assets/icons/sound-beach.png" alt="Beach Icon" style="width:28px;height:28px;object-fit:contain;">
+                </div>
+                <div>
+                  <h3 style="font-size: 1.15rem;">Ocean Beach</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Soothing coastal wave shore</p>
+                </div>
+                
+                <div class="equalizer">
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                </div>
+                
+                <button class="btn btn-outline btn-sm play-toggle-btn" data-sound="beach" style="width: 100%; margin-top: 10px;">
+                  Play Sound
+                </button>
+                <audio id="audio-beach" loop src="https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3" preload="none"></audio>
+              </div>
+              
+              <!-- Sound 2: Forest -->
+              <div class="sound-card" id="sound-card-forest">
+                <div class="sound-icon-box" style="display:flex;align-items:center;justify-content:center;">
+                  <img src="../assets/icons/sound-forest.png" alt="Forest Icon" style="width:28px;height:28px;object-fit:contain;">
+                </div>
+                <div>
+                  <h3 style="font-size: 1.15rem;">Alpine Forest</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Calm breeze & water stream</p>
+                </div>
+                
+                <div class="equalizer">
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                </div>
+                
+                <button class="btn btn-outline btn-sm play-toggle-btn" data-sound="forest" style="width: 100%; margin-top: 10px;">
+                  Play Sound
+                </button>
+                <audio id="audio-forest" loop src="https://www.soundjay.com/nature/sounds/rain-07.mp3" preload="none"></audio>
+              </div>
+              
+              <!-- Sound 3: City -->
+              <div class="sound-card" id="sound-card-city">
+                <div class="sound-icon-box" style="display:flex;align-items:center;justify-content:center;">
+                  <img src="../assets/icons/sound-city.png" alt="City Icon" style="width:28px;height:28px;object-fit:contain;">
+                </div>
+                <div>
+                  <h3 style="font-size: 1.15rem;">Bustling City</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Urban sounds & road rumble</p>
+                </div>
+                
+                <div class="equalizer">
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                  <div class="eq-bar"></div>
+                </div>
+                
+                <button class="btn btn-outline btn-sm play-toggle-btn" data-sound="city" style="width: 100%; margin-top: 10px;">
+                  Play Sound
+                </button>
+                <audio id="audio-city" loop src="https://www.soundjay.com/misc/sounds/street-traffic-1.mp3" preload="none"></audio>
+              </div>
+              
+            </div>
+          </div>
+          
+          <!-- Visited and Planned Destination Tracker -->
+          <div class="tracker-dashboard reveal-on-scroll">
+            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 12px;">Personal Travel Tracker</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px;">Mark places as visited or planned to track your exploration journey. Visited places are stored in your log history.</p>
+            
+            <!-- Statistics row -->
+            <div class="stats-row">
+              <div class="stat-box">
+                <h4 id="stat-visited-count">0</h4>
+                <p>Visited</p>
+              </div>
+              <div class="stat-box">
+                <h4 id="stat-planned-count">0</h4>
+                <p>Planned</p>
+              </div>
+              <div class="stat-box">
+                <h4 id="stat-percent">0%</h4>
+                <p>World Explored</p>
+              </div>
+            </div>
+            
+            <!-- Destination Check List -->
+            <div class="tracker-list" id="tracker-list">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-logo-desc">
+          <span class="footer-logo">TravelNest</span>
+          <p class="footer-desc">
+            A premium, multi-page client-side application for managing travel plans, budgets, and ambient soundtracks. Built with advanced vanilla Web standards.
+          </p>
+        </div>
+        
+        <div class="footer-links-wrap">
+          <h3 class="footer-links-title">Quick Links</h3>
+          <ul class="footer-links-list">
+            <li><a href="../index.html" class="footer-link">Home</a></li>
+            <li><a href="./explorer.html" class="footer-link">Destination Explorer</a></li>
+            <li><a href="./budget.html" class="footer-link">Trip Budget Planner</a></li>
+            <li><a href="./generator.html" class="footer-link">Trip Generator</a></li>
+            <li><a href="./mood.html" class="footer-link">Travel Mood</a></li>
+            <li><a href="./feedback.html" class="footer-link">Feedback Support</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-newsletter-wrap">
+          <h3 class="footer-links-title">Travel Inspiration</h3>
+          <p class="footer-desc" style="margin-bottom: 8px;">Subscribe to receive handpicked travel inspiration and daily spot highlights.</p>
+          <form class="footer-newsletter-form" id="newsletter-form">
+            <input type="email" placeholder="Your Email Address" class="footer-newsletter-input" required id="newsletter-email">
+            <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 TravelNest. All Rights Reserved. Built for COMP40053 Assignment 3.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Javascript imports -->
+  <script src="../js/data.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/mood.js"></script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO Meta Tags -->
+    <title>Trip Budget Planner - TravelNest</title>
+    <meta
+      name="description"
+      content="Calculate and evaluate your travel itinerary budgets, compare accommodation, food and travel costs, and save plans."
+    />
+    <meta
+      name="keywords"
+      content="budget calculator, travel budget, vacation planner, savings goal"
+    />
+    <meta name="author" content="COMP40053 Student" />
+
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/icons/logo.png" />
+
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+
+    <!-- Page-specific styles -->
+    <style>
+      .planner-wrapper {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 40px;
+        margin-bottom: 60px;
+        align-items: start;
+      }
+
+      .planner-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        padding: 32px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+      }
+
+      /* Result Display Panel */
+      .result-panel {
+        margin-top: 30px;
+        padding: 24px;
+        border-radius: var(--border-radius-md);
+        background: rgba(14, 165, 233, 0.02);
+        border: 1px dashed var(--accent-blue);
+        display: none; /* Revealed via JS */
+        flex-direction: column;
+        gap: 20px;
+        animation: fadeInUp 0.5s ease-out forwards;
+      }
+
+      .counter-wrapper {
+        text-align: center;
+      }
+
+      .total-cost-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .total-cost-amount {
+        font-size: 3.2rem;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        color: var(--accent-blue);
+        line-height: 1;
+        margin: 8px 0;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 8px auto;
+      }
+
+      .status-low {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+      }
+
+      .status-moderate {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+      }
+
+      .status-luxury {
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--accent-coral);
+      }
+
+      /* Progress Bar Styles */
+      .progress-container {
+        margin-top: 10px;
+      }
+
+      .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .progress-bar-bg {
+        width: 100%;
+        height: 12px;
+        background-color: var(--border-color);
+        border-radius: 50px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0%; /* Animates with JS */
+        background: linear-gradient(
+          90deg,
+          var(--accent-blue),
+          var(--accent-teal)
+        );
+        border-radius: 50px;
+        transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .tier-markers {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        margin-top: 6px;
+        color: var(--text-muted);
+      }
+
+      /* Saved Plans Sidebar */
+      .saved-plans-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .saved-plan-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition-smooth);
+        position: relative;
+      }
+
+      .saved-plan-card:hover {
+        border-color: var(--accent-blue);
+        transform: translateX(4px);
+      }
+
+      .saved-plan-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .saved-plan-dest {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: var(--primary-color);
+      }
+
+      .saved-plan-meta {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .saved-plan-cost {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--accent-blue);
+      }
+
+      .delete-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .delete-btn:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.08);
+      }
+
+      .no-plans {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+        border: 1px dashed var(--border-color);
+        border-radius: var(--border-radius-md);
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .no-plans .plans-icon {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+      }
+
+      @media screen and (max-width: 992px) {
+        .planner-wrapper {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="header">
+      <div class="container navbar">
+        <a href="../index.html" class="navbar-brand" id="nav-brand-logo">
+          <img
+            src="../assets/icons/logo.png"
+            alt="TravelNest Logo"
+            class="navbar-logo"
+          />
+          <span class="navbar-title">TravelNest</span>
+        </a>
+
+        <!-- Hamburger Menu Trigger -->
+        <button
+          class="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          id="burger-btn"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <!-- Navigation Links -->
+        <nav class="navbar-menu" id="nav-menu">
+          <a href="../index.html" class="navbar-item">Home</a>
+          <a href="./explorer.html" class="navbar-item">Explorer</a>
+          <a href="./budget.html" class="navbar-item">Budget Planner</a>
+          <a href="./generator.html" class="navbar-item">Trip Generator</a>
+          <a href="./mood.html" class="navbar-item">Travel Mood</a>
+          <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-content">
+      <section class="section">
+        <div class="container">
+          <div class="section-title-wrap">
+            <span class="section-subtitle">Financial Tool</span>
+            <h1 class="section-title">Trip Budget Planner</h1>
+          </div>
+
+          <div class="planner-wrapper">
+            <!-- Input Form Section -->
+            <div class="planner-card reveal-on-scroll">
+              <h2
+                style="font-size: 1.4rem; margin-bottom: 24px; font-weight: 800"
+              >
+                Calculate Trip Cost
+              </h2>
+
+              <form id="budget-form">
+                <!-- Destination Dropdown Selection -->
+                <div class="form-group">
+                  <label for="budget-destination" class="form-label"
+                    >Select Destination</label
+                  >
+                  <select id="budget-destination" class="form-select" required>
+                    <option value="" disabled selected>
+                      -- Choose your escape --
+                    </option>
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <!-- Number of Days -->
+                <div class="form-group">
+                  <label for="budget-days" class="form-label"
+                    >Duration of Stay (Days)</label
+                  >
+                  <input
+                    type="number"
+                    id="budget-days"
+                    class="form-input"
+                    min="1"
+                    max="365"
+                    placeholder="e.g. 7"
+                    required
+                  />
+                </div>
+
+                <!-- Daily Allowance -->
+                <div class="form-group">
+                  <label for="budget-daily" class="form-label"
+                    >Daily Budget Allowance (USD)</label
+                  >
+                  <div style="position: relative">
+                    <span
+                      style="
+                        position: absolute;
+                        left: 16px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        font-weight: 700;
+                        color: var(--text-muted);
+                      "
+                      >$</span
+                    >
+                    <input
+                      type="number"
+                      id="budget-daily"
+                      class="form-input"
+                      min="1"
+                      max="10000"
+                      placeholder="e.g. 100"
+                      style="padding-left: 32px"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  style="width: 100%; margin-top: 8px"
+                >
+                  Calculate & Analyze Budget
+                </button>
+              </form>
+
+              <!-- Result Display Panel -->
+              <div class="result-panel" id="result-panel">
+                <div class="counter-wrapper">
+                  <span class="total-cost-title">Estimated Total Cost</span>
+                  <div class="total-cost-amount" id="total-amount">$0</div>
+                  <div class="status-badge" id="status-badge">Low Budget</div>
+                </div>
+
+                <div class="progress-container">
+                  <div class="progress-labels">
+                    <span>Budget Tier Analysis</span>
+                    <span id="tier-percent">0%</span>
+                  </div>
+                  <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                  </div>
+                  <div class="tier-markers">
+                    <span id="label-low">Budget ($0)</span>
+                    <span id="label-mod">Moderate ($0)</span>
+                    <span id="label-lux">Luxury ($0)</span>
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-accent btn-sm"
+                  id="save-budget-btn"
+                  style="
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                  "
+                >
+                  Save This Plan to Local List
+                </button>
+              </div>
+            </div>
+
+            <!-- Saved Calculations Section -->
+            <div class="reveal-on-scroll">
+              <h2
+                style="font-size: 1.4rem; margin-bottom: 24px; font-weight: 800"
+              >
+                Saved Budget Plans
+              </h2>
+
+              <div class="saved-plans-container" id="saved-plans-list">
+                <!-- Populated via JS -->
+                <div class="no-plans">
+                  <div class="plans-icon" style="display:flex;justify-content:center;margin-bottom:12px;">
+                    <img src="../assets/icons/empty-budget.png" alt="No Plans Icon" style="width:48px;height:48px;object-fit:contain;">
+                  </div>
+                  <p>
+                    No plans saved yet. Fill out the calculator to save your
+                    first budget.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-logo-desc">
+            <span class="footer-logo">TravelNest</span>
+            <p class="footer-desc">
+              A premium, multi-page client-side application for managing travel
+              plans, budgets, and ambient soundtracks. Built with advanced
+              vanilla Web standards.
+            </p>
+          </div>
+
+          <div class="footer-links-wrap">
+            <h3 class="footer-links-title">Quick Links</h3>
+            <ul class="footer-links-list">
+              <li><a href="../index.html" class="footer-link">Home</a></li>
+              <li>
+                <a href="./explorer.html" class="footer-link"
+                  >Destination Explorer</a
+                >
+              </li>
+              <li>
+                <a href="./budget.html" class="footer-link"
+                  >Trip Budget Planner</a
+                >
+              </li>
+              <li>
+                <a href="./generator.html" class="footer-link"
+                  >Trip Generator</a
+                >
+              </li>
+              <li><a href="./mood.html" class="footer-link">Travel Mood</a></li>
+              <li>
+                <a href="./feedback.html" class="footer-link"
+                  >Feedback Support</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-newsletter-wrap">
+            <h3 class="footer-links-title">Travel Inspiration</h3>
+            <p class="footer-desc" style="margin-bottom: 8px">
+              Subscribe to receive handpicked travel inspiration and daily spot
+              highlights.
+            </p>
+            <form class="footer-newsletter-form" id="newsletter-form">
+              <input
+                type="email"
+                placeholder="Your Email Address"
+                class="footer-newsletter-input"
+                required
+                id="newsletter-email"
+              />
+              <button type="submit" class="btn btn-primary btn-sm">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            &copy; 2026 TravelNest. All Rights Reserved. Built for COMP40053
+            Assignment 3.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Javascript imports -->
+    <script src="../js/data.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/budget.js"></script>
+  </body>
+</html>

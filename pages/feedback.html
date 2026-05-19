@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>Feedback & Support - TravelNest</title>
+  <meta name="description" content="Reach out to the TravelNest support team with feedback or questions. Browse our interactive FAQ accordion for quick help.">
+  <meta name="keywords" content="feedback, customer support, FAQ accordion, help center">
+  <meta name="author" content="COMP40053 Student">
+  
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="../assets/icons/logo.png">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  
+  <!-- Page-specific styles -->
+  <style>
+    .support-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 60px;
+      align-items: start;
+    }
+    
+    .feedback-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius-md);
+      padding: 32px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-color);
+    }
+    
+    /* Accordion styles */
+    .faq-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .faq-item {
+      background: var(--card-bg);
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+    
+    .faq-header {
+      padding: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      color: var(--primary-color);
+      transition: background var(--transition-fast);
+    }
+    
+    .faq-header:hover {
+      background: rgba(14, 165, 233, 0.02);
+    }
+    
+    .faq-icon {
+      font-size: 0.9rem;
+      color: var(--accent-blue);
+      transition: transform var(--transition-smooth);
+    }
+    
+    .faq-body {
+      max-height: 0; /* Animated collapsing */
+      overflow: hidden;
+      transition: max-height 0.25s ease-out;
+      background-color: rgba(2, 6, 23, 0.01);
+    }
+    
+    .faq-content {
+      padding: 0 20px 20px 20px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    
+    /* Open Accordion States */
+    .faq-item.is-open {
+      border-color: var(--accent-blue);
+    }
+    
+    .faq-item.is-open .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Form field validation errors visual markers */
+    .form-group.has-error .form-input,
+    .form-group.has-error .form-textarea {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+    
+    .validation-error-msg {
+      color: #ef4444;
+      font-size: 0.78rem;
+      margin-top: 4px;
+      display: none;
+      font-weight: 600;
+    }
+    
+    .form-group.has-error .validation-error-msg {
+      display: block;
+    }
+
+    @media screen and (max-width: 992px) {
+      .support-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container navbar">
+      <a href="../index.html" class="navbar-brand" id="nav-brand-logo">
+        <img src="../assets/icons/logo.png" alt="TravelNest Logo" class="navbar-logo">
+        <span class="navbar-title">TravelNest</span>
+      </a>
+      
+      <!-- Hamburger Menu Trigger -->
+      <button class="navbar-burger" aria-label="menu" aria-expanded="false" id="burger-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <!-- Navigation Links -->
+      <nav class="navbar-menu" id="nav-menu">
+        <a href="../index.html" class="navbar-item">Home</a>
+        <a href="./explorer.html" class="navbar-item">Explorer</a>
+        <a href="./budget.html" class="navbar-item">Budget Planner</a>
+        <a href="./generator.html" class="navbar-item">Trip Generator</a>
+        <a href="./mood.html" class="navbar-item">Travel Mood</a>
+        <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <section class="section">
+      <div class="container">
+        
+        <div class="section-title-wrap">
+          <span class="section-subtitle">Get In Touch</span>
+          <h1 class="section-title">Feedback & Support</h1>
+        </div>
+        
+        <div class="support-wrapper">
+          
+          <!-- Validated Feedback Form Section -->
+          <div class="feedback-card reveal-on-scroll">
+            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">Send Us a Message</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px;">Your feedback is essential in refining TravelNest. Let us know your thoughts or report an issue.</p>
+            
+            <form id="feedback-form" novalidate>
+              
+              <!-- Name Field -->
+              <div class="form-group" id="group-name">
+                <label for="fb-name" class="form-label">Full Name</label>
+                <input type="text" id="fb-name" class="form-input" placeholder="e.g. John Doe" required>
+                <span class="validation-error-msg" id="error-name">Name must be at least 3 characters long.</span>
+              </div>
+              
+              <!-- Email Field -->
+              <div class="form-group" id="group-email">
+                <label for="fb-email" class="form-label">Email Address</label>
+                <input type="email" id="fb-email" class="form-input" placeholder="e.g. john@example.com" required>
+                <span class="validation-error-msg" id="error-email">Please enter a valid email address.</span>
+              </div>
+              
+              <!-- Message Field -->
+              <div class="form-group" id="group-message">
+                <label for="fb-message" class="form-label">Your Message</label>
+                <textarea id="fb-message" class="form-textarea" rows="5" placeholder="Write your comments or questions here..." required></textarea>
+                <span class="validation-error-msg" id="error-message">Message must be at least 15 characters long.</span>
+              </div>
+              
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                Submit Feedback
+              </button>
+            </form>
+          </div>
+          
+          <!-- Accordion FAQ Section -->
+          <div class="reveal-on-scroll">
+            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">Frequently Asked Questions</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px;">Quick answers to common questions about TravelNest itinerary planning tools.</p>
+            
+            <div class="faq-container" id="faq-accordion-box">
+              
+              <!-- FAQ 1 -->
+              <div class="faq-item">
+                <div class="faq-header">
+                  <span>How is the Destination of the Day selected?</span>
+                  <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-body">
+                  <div class="faq-content">
+                    The Spotlight Destination changes automatically every 24 hours at midnight. It utilizes a deterministic calendar date hashing algorithm, cycling through our global registry database so that every user sees the exact same highlighted destination daily.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- FAQ 2 -->
+              <div class="faq-item">
+                <div class="faq-header">
+                  <span>Is my travel budget data safe?</span>
+                  <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-body">
+                  <div class="faq-content">
+                    Yes! All your travel budgets, saved wishlists, explored status settings, and newsletter preferences are stored safely and locally inside your browser's <code>localStorage</code> database. No financial information is sent to external servers, protecting your privacy.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- FAQ 3 -->
+              <div class="faq-item">
+                <div class="faq-header">
+                  <span>How does the Random Trip Generator choose alternative matches?</span>
+                  <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-body">
+                  <div class="faq-content">
+                    If our database lacks an exact match for your selected vibe and budget level, the system triggers a fallback queue. It first searches for other destinations matching your travel vibe (across other budgets), then tries to match your budget (across other vibes), and finally falls back to recommending a top destination from our full list.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- FAQ 4 -->
+              <div class="faq-item">
+                <div class="faq-header">
+                  <span>Can I use TravelNest offline as a PWA?</span>
+                  <span class="faq-icon">▼</span>
+                </div>
+                <div class="faq-body">
+                  <div class="faq-content">
+                    Absolutely! TravelNest is fully structured as a Progressive Web Application (PWA). It registers a background Service Worker that caches stylesheets, images, HTML documents, and scripts, allowing you to open and run the planner dashboard even without internet connections.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-logo-desc">
+          <span class="footer-logo">TravelNest</span>
+          <p class="footer-desc">
+            A premium, multi-page client-side application for managing travel plans, budgets, and ambient soundtracks. Built with advanced vanilla Web standards.
+          </p>
+        </div>
+        
+        <div class="footer-links-wrap">
+          <h3 class="footer-links-title">Quick Links</h3>
+          <ul class="footer-links-list">
+            <li><a href="../index.html" class="footer-link">Home</a></li>
+            <li><a href="./explorer.html" class="footer-link">Destination Explorer</a></li>
+            <li><a href="./budget.html" class="footer-link">Trip Budget Planner</a></li>
+            <li><a href="./generator.html" class="footer-link">Trip Generator</a></li>
+            <li><a href="./mood.html" class="footer-link">Travel Mood</a></li>
+            <li><a href="./feedback.html" class="footer-link">Feedback Support</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-newsletter-wrap">
+          <h3 class="footer-links-title">Travel Inspiration</h3>
+          <p class="footer-desc" style="margin-bottom: 8px;">Subscribe to receive handpicked travel inspiration and daily spot highlights.</p>
+          <form class="footer-newsletter-form" id="newsletter-form">
+            <input type="email" placeholder="Your Email Address" class="footer-newsletter-input" required id="newsletter-email">
+            <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 TravelNest. All Rights Reserved. Built for COMP40053 Assignment 3.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Javascript imports -->
+  <script src="../js/data.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/feedback.js"></script>
+</body>
+</html>
