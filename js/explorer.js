@@ -165,9 +165,9 @@ function setupExplorer() {
     document.getElementById('modal-title').textContent = dest.name + ', ' + dest.country;
 
     document.getElementById('modal-meta').innerHTML =
-      '<span>🌍 ' + dest.continent + '</span> &nbsp;' +
-      '<span>🧭 ' + dest.travelType.toUpperCase() + '</span> &nbsp;' +
-      '<span>💰 ' + dest.budgetRange.toUpperCase() + ' BUDGET</span>';
+      '<span> ' + dest.continent + '</span> &nbsp;' +
+      '<span> ' + dest.travelType.toUpperCase() + '</span> &nbsp;' +
+      '<span> ' + dest.budgetRange.toUpperCase() + ' BUDGET</span>';
 
     document.getElementById('modal-desc').textContent = dest.description;
 

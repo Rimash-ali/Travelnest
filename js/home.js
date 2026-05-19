@@ -54,12 +54,12 @@ function loadDestinationOfTheDay() {
     '<div class="dod-card">' +
       '<img src="' + dest.image + '" alt="' + dest.name + '" class="dod-img" onerror="this.src=\'assets/placeholder.jpg\'">' +
       '<div class="dod-content">' +
-        '<span class="dod-badge">⭐ Destination of the Day</span>' +
+        '<span class="dod-badge"> Destination of the Day</span>' +
         '<h3 class="dod-title">' + dest.name + ', ' + dest.country + '</h3>' +
         '<div class="dod-meta">' +
-          '<span>🌍 ' + dest.continent + '</span>' +
-          '<span>🧭 ' + dest.travelType.toUpperCase() + '</span>' +
-          '<span>💰 ' + dest.budgetRange.toUpperCase() + ' BUDGET</span>' +
+          '<span> ' + dest.continent + '</span>' +
+          '<span> ' + dest.travelType.toUpperCase() + '</span>' +
+          '<span> ' + dest.budgetRange.toUpperCase() + ' BUDGET</span>' +
         '</div>' +
         '<p class="dod-desc">' + dest.description + '</p>' +
         '<div style="margin-top: 14px;">' +

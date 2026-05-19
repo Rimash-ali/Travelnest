@@ -34,6 +34,12 @@ function setupGenerator() {
       var type = typeSelect.value;
       var budget = budgetSelect.value;
 
+      // adding some smooth animation effect on the button click
+      surpriseBtn.classList.add('btn-animating');
+      setTimeout(function() {
+        surpriseBtn.classList.remove('btn-animating');
+      }, 500);
+
       // show loader and hide old result
       resultCard.style.display = 'none';
       loader.style.display = 'flex';
