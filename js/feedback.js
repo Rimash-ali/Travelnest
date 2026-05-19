@@ -1,23 +1,31 @@
-// travelnest feedback and faq accordion page script
+// feedback.js - faq accordion and feedback form validation
+// form saves to localStorage, no server needed
 
-document.addEventListener('DOMContentLoaded', () => {
-  initFaqAccordion();
-  initFormValidation();
+document.addEventListener('DOMContentLoaded', function() {
+  setupFaqAccordion();
+  setupFeedbackForm();
 });
 
-// handles opening/closing faq accordion slides
-function initFaqAccordion() {
-  const faqHeaders = document.querySelectorAll('.faq-header');
+// simple accordion for the FAQ section
+function setupFaqAccordion() {
+  var headers = document.querySelectorAll('.faq-header');
 
-  faqHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-      const item = header.parentElement;
-      const body = item.querySelector('.faq-body');
-      const isOpen = item.classList.contains('is-open');
+  for (var i = 0; i < headers.length; i++) {
+    headers[i].addEventListener('click', function() {
+      var item = this.parentElement;
+      var body = item.querySelector('.faq-body');
+      var isOpen = item.classList.contains('is-open');
 
-      // close other panels so only one is open
-      collapseAllFaqs(item);
+      // close all other faq items first
+      var allItems = document.querySelectorAll('.faq-item');
+      for (var j = 0; j < allItems.length; j++) {
+        if (allItems[j] !== item) {
+          allItems[j].classList.remove('is-open');
+          allItems[j].querySelector('.faq-body').style.maxHeight = '0px';
+        }
+      }
 
+      // toggle the clicked item
       if (isOpen) {
         item.classList.remove('is-open');
         body.style.maxHeight = '0px';
@@ -26,113 +34,93 @@ function initFaqAccordion() {
         body.style.maxHeight = body.scrollHeight + 'px';
       }
     });
-  });
-
-  function collapseAllFaqs(exceptItem = null) {
-    const items = document.querySelectorAll('.faq-item');
-    items.forEach(item => {
-      if (item !== exceptItem && item.classList.contains('is-open')) {
-        item.classList.remove('is-open');
-        item.querySelector('.faq-body').style.maxHeight = '0px';
-      }
-    });
   }
 }
 
-// handles local validation checks before submitting the feedback
-function initFormValidation() {
-  const form = document.getElementById('feedback-form');
-  const nameInput = document.getElementById('fb-name');
-  const emailInput = document.getElementById('fb-email');
-  const messageInput = document.getElementById('fb-message');
-
+// feedback form with basic validation
+function setupFeedbackForm() {
+  var form = document.getElementById('feedback-form');
   if (!form) return;
 
-  form.addEventListener('submit', (e) => {
+  var nameInput = document.getElementById('fb-name');
+  var emailInput = document.getElementById('fb-email');
+  var messageInput = document.getElementById('fb-message');
+
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    // clear previous error marks
-    resetErrors();
+    // clear previous error states
+    clearErrors();
 
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
-    const message = messageInput.value.trim();
+    var name = nameInput.value.trim();
+    var email = emailInput.value.trim();
+    var message = messageInput.value.trim();
 
-    let hasErrors = false;
+    var hasError = false;
 
-    // name validation
-    if (!name || name.length < 3) {
-      setError('group-name');
-      hasErrors = true;
+    // validate name - at least 3 chars
+    if (name.length < 3) {
+      markError('group-name');
+      hasError = true;
     }
 
-    // email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      setError('group-email');
-      hasErrors = true;
+    // basic email check - must have @ and a dot
+    if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+      markError('group-email');
+      hasError = true;
     }
 
-    // message content validation
-    if (!message || message.length < 15) {
-      setError('group-message');
-      hasErrors = true;
+    // message needs to be at least 15 chars
+    if (message.length < 15) {
+      markError('group-message');
+      hasError = true;
     }
 
-    if (hasErrors) {
+    if (hasError) {
       if (window.showNotification) {
-        window.showNotification('Please correct the highlighted fields in red before submitting.', 'error');
+        window.showNotification('Please fix the errors before submitting.', 'error');
       }
       return;
     }
 
-    // make feedback submit entry
-    const feedbackSubmission = {
+    // build the feedback object to save
+    var feedbackEntry = {
       id: 'fb_' + Date.now(),
       name: name,
       email: email,
       message: message,
-      submittedAt: new Date().toISOString()
+      date: new Date().toLocaleDateString()
     };
 
-    // read and write to local list
-    let savedFeedback = [];
-    const stored = localStorage.getItem('feedback_submissions');
-    savedFeedback = stored ? JSON.parse(stored) : [];
-
-    savedFeedback.push(feedbackSubmission);
-
-    let success = false;
-    try {
-      localStorage.setItem('feedback_submissions', JSON.stringify(savedFeedback));
-      success = true;
-    } catch (err) {
-      console.error(err);
+    // get existing submissions
+    var stored = localStorage.getItem('feedback_submissions');
+    var all = [];
+    if (stored) {
+      all = JSON.parse(stored);
     }
 
-    if (success) {
-      if (window.showNotification) {
-        window.showNotification('Thank you! Your feedback has been logged in our systems.', 'success');
-      } else {
-        alert('Feedback submitted successfully!');
-      }
-      form.reset();
-    } else {
-      if (window.showNotification) {
-        window.showNotification('Failed to log feedback. Storage space error.', 'error');
-      }
+    // add new one and save back
+    all.push(feedbackEntry);
+    localStorage.setItem('feedback_submissions', JSON.stringify(all));
+
+    if (window.showNotification) {
+      window.showNotification('Thanks ' + name + '! Your feedback was submitted.', 'success');
     }
+
+    form.reset();
   });
 
-  function setError(groupId) {
-    const group = document.getElementById(groupId);
-    if (group) {
-      group.classList.add('has-error');
-    }
+  // adds the has-error class to highlight a field
+  function markError(groupId) {
+    var group = document.getElementById(groupId);
+    if (group) group.classList.add('has-error');
   }
 
-  function resetErrors() {
-    const groups = document.querySelectorAll('.form-group');
-    groups.forEach(g => g.classList.remove('has-error'));
+  // clears all error highlighting
+  function clearErrors() {
+    var groups = document.querySelectorAll('.form-group');
+    for (var i = 0; i < groups.length; i++) {
+      groups[i].classList.remove('has-error');
+    }
   }
 }

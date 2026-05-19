@@ -1,211 +1,169 @@
-// travelnest travel mood track and list tracker
+// mood.js - ambient sounds and personal travel tracker
+// two separate features on this page
 
-document.addEventListener('DOMContentLoaded', () => {
-  initAmbientSounds();
-  initTravelTracker();
+document.addEventListener('DOMContentLoaded', function() {
+  setupAmbientSounds();
+  setupTravelTracker();
 });
 
-// controls playback of ocean beach and forest background noises
-function initAmbientSounds() {
-  const toggleBtns = document.querySelectorAll('.play-toggle-btn');
-  
-  toggleBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const soundType = btn.getAttribute('data-sound');
-      const card = document.getElementById(`sound-card-${soundType}`);
-      const audio = document.getElementById(`audio-${soundType}`);
-      
+// handles the play/pause buttons for each sound card
+function setupAmbientSounds() {
+  var buttons = document.querySelectorAll('.play-toggle-btn');
+
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function() {
+      var soundType = this.getAttribute('data-sound');
+      var card = document.getElementById('sound-card-' + soundType);
+      var audio = document.getElementById('audio-' + soundType);
+      var btn = this;
+
       if (!audio || !card) return;
 
-      const isPlaying = card.classList.contains('is-active') || card.classList.contains('is-playing');
+      var isPlaying = card.classList.contains('is-playing');
 
-      // mute other sounds so they dont mix
-      pauseAllSounds(soundType);
+      // stop all other sounds before playing this one
+      stopAllSounds(soundType);
 
       if (isPlaying) {
-        // pause it
         audio.pause();
         card.classList.remove('is-playing');
-        btn.innerHTML = `Play Sound`;
-        
-        if (window.showNotification) {
-          window.showNotification(`Ambient sound paused.`, 'info', 2000);
-        }
+        btn.textContent = 'Play Sound';
       } else {
-        // play audio stream
-        audio.play()
-          .then(() => {
-            card.classList.add('is-playing');
-            btn.innerHTML = `Pause Sound`;
-            if (window.showNotification) {
-              window.showNotification(`Playing ambient ${soundType} soundtrack.`, 'success', 2000);
-            }
-          })
-          .catch(err => {
-            console.error("Audio playback blocked or failed:", err);
-            // fallback if audio fails/blocked by browser permissions
-            card.classList.add('is-playing');
-            btn.innerHTML = `Pause (Muted Demo)`;
-            if (window.showNotification) {
-              window.showNotification(`Audio blocked by browser. Equalizer running in demo mode.`, 'info');
-            }
-          });
+        // try to play - browser might block it
+        audio.play().then(function() {
+          card.classList.add('is-playing');
+          btn.textContent = 'Pause Sound';
+        }).catch(function(err) {
+          // browser blocked autoplay, run in demo mode
+          console.log('audio blocked:', err);
+          card.classList.add('is-playing');
+          btn.textContent = 'Pause (Demo)';
+          if (window.showNotification) {
+            window.showNotification('Audio blocked by browser - running in demo mode.', 'info');
+          }
+        });
       }
     });
-  });
+  }
 
-  // stop all currently running sounds
-  function pauseAllSounds(exceptType) {
-    const allAudios = document.querySelectorAll('audio');
-    allAudios.forEach(audio => {
-      const type = audio.id.replace('audio-', '');
+  // pauses all sounds except the one being played now
+  function stopAllSounds(exceptType) {
+    var allAudios = document.querySelectorAll('audio');
+    for (var i = 0; i < allAudios.length; i++) {
+      var type = allAudios[i].id.replace('audio-', '');
       if (type !== exceptType) {
-        audio.pause();
-        const card = document.getElementById(`sound-card-${type}`);
-        const btn = document.querySelector(`.play-toggle-btn[data-sound="${type}"]`);
-        
+        allAudios[i].pause();
+        var card = document.getElementById('sound-card-' + type);
+        var btn = document.querySelector('[data-sound="' + type + '"]');
         if (card) card.classList.remove('is-playing');
-        if (btn) btn.innerHTML = `Play Sound`;
+        if (btn) btn.textContent = 'Play Sound';
       }
-    });
+    }
   }
 }
 
-// tracker section for checking off visited/planned destinations
-function initTravelTracker() {
-  const trackerList = document.getElementById('tracker-list');
-  const countVisitedEl = document.getElementById('stat-visited-count');
-  const countPlannedEl = document.getElementById('stat-planned-count');
-  const percentEl = document.getElementById('stat-percent');
+// visited and planned tracker feature
+function setupTravelTracker() {
+  var trackerList = document.getElementById('tracker-list');
+  var visitedCountEl = document.getElementById('stat-visited-count');
+  var plannedCountEl = document.getElementById('stat-planned-count');
+  var percentEl = document.getElementById('stat-percent');
 
   if (!trackerList) return;
 
-  // render list and count statistics
-  updateStatsAndList();
+  // build tracker on load
+  refreshTracker();
 
-  function updateStatsAndList() {
-    // 1. Fetch current logs from storage
-    let visited = [];
-    let planned = [];
+  function refreshTracker() {
+    // load saved tracker data
+    var visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
+    var planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
 
-    const vStored = localStorage.getItem('tracker_visited');
-    const pStored = localStorage.getItem('tracker_planned');
-    visited = vStored ? JSON.parse(vStored) : [];
-    planned = pStored ? JSON.parse(pStored) : [];
+    // update stat counters
+    visitedCountEl.textContent = visited.length;
+    plannedCountEl.textContent = planned.length;
 
-    // update UI text stats
-    const totalDests = travelDestinations.length;
-    countVisitedEl.textContent = visited.length;
-    countPlannedEl.textContent = planned.length;
-    
-    const percentage = totalDests > 0 ? Math.round((visited.length / totalDests) * 100) : 0;
-    percentEl.textContent = `${percentage}%`;
+    var total = travelDestinations.length;
+    var percent = total > 0 ? Math.round((visited.length / total) * 100) : 0;
+    percentEl.textContent = percent + '%';
 
-    // display tracker items in the DOM
+    // clear and rebuild the tracker list
     trackerList.innerHTML = '';
-    
-    travelDestinations.forEach(dest => {
-      const isVisited = visited.includes(dest.id);
-      const isPlanned = planned.includes(dest.id);
 
-      const imgUrl = dest.image.startsWith('assets') ? '../' + dest.image : dest.image;
-      const item = document.createElement('div');
+    for (var i = 0; i < travelDestinations.length; i++) {
+      var dest = travelDestinations[i];
+      var isVisited = visited.indexOf(dest.id) !== -1;
+      var isPlanned = planned.indexOf(dest.id) !== -1;
+
+      var imgUrl = dest.image;
+      if (imgUrl.indexOf('assets') === 0) imgUrl = '../' + imgUrl;
+
+      var item = document.createElement('div');
       item.className = 'tracker-item';
-      item.innerHTML = `
-        <img src="${imgUrl}" alt="${dest.name}" class="tracker-thumb" onerror="this.src='../assets/placeholder.jpg'">
-        <div class="tracker-info">
-          <div class="tracker-name">${dest.name}</div>
-          <div class="tracker-country">${dest.country} | ${dest.continent}</div>
-        </div>
-        <div class="tracker-actions">
-          <button class="btn-track btn-track-visited ${isVisited ? 'active' : ''}" title="${isVisited ? 'Unmark Visited' : 'Mark Visited'}" data-id="${dest.id}" style="display:flex;align-items:center;justify-content:center;">
-            <img src="../assets/icons/marker-visited.png" alt="Visited" style="width:14px;height:14px;object-fit:contain;">
-          </button>
-          <button class="btn-track btn-track-planned ${isPlanned ? 'active' : ''}" title="${isPlanned ? 'Unmark Planned' : 'Mark Planned'}" data-id="${dest.id}" style="display:flex;align-items:center;justify-content:center;">
-            <img src="../assets/icons/marker-planned.png" alt="Planned" style="width:14px;height:14px;object-fit:contain;">
-          </button>
-        </div>
-      `;
+      item.innerHTML =
+        '<img src="' + imgUrl + '" alt="' + dest.name + '" class="tracker-thumb" onerror="this.src=\'../assets/placeholder.jpg\'">' +
+        '<div class="tracker-info">' +
+          '<div class="tracker-name">' + dest.name + '</div>' +
+          '<div class="tracker-country">' + dest.country + ' | ' + dest.continent + '</div>' +
+        '</div>' +
+        '<div class="tracker-actions">' +
+          '<button class="btn-track btn-track-visited ' + (isVisited ? 'active' : '') + '" title="' + (isVisited ? 'Unmark' : 'Mark as Visited') + '">✓</button>' +
+          '<button class="btn-track btn-track-planned ' + (isPlanned ? 'active' : '') + '" title="' + (isPlanned ? 'Unmark' : 'Mark as Planned') + '">📅</button>' +
+        '</div>';
 
-      // visited toggle logic
-      const visitedBtn = item.querySelector('.btn-track-visited');
-      visitedBtn.addEventListener('click', () => {
-        toggleVisited(dest.id, dest.name);
-      });
-
-      // planned toggle logic
-      const plannedBtn = item.querySelector('.btn-track-planned');
-      plannedBtn.addEventListener('click', () => {
-        togglePlanned(dest.id, dest.name);
-      });
+      // attach button listeners using closure
+      (function(destId, destName) {
+        item.querySelector('.btn-track-visited').addEventListener('click', function() {
+          toggleVisited(destId, destName);
+        });
+        item.querySelector('.btn-track-planned').addEventListener('click', function() {
+          togglePlanned(destId, destName);
+        });
+      })(dest.id, dest.name);
 
       trackerList.appendChild(item);
-    });
+    }
   }
 
-  // toggle selected destination ID in visited storage
   function toggleVisited(id, name) {
-    let visited = [];
-    let planned = [];
+    var visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
+    var planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
 
-    visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
-    planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
-
-    const index = visited.indexOf(id);
-    if (index > -1) {
-      visited.splice(index, 1);
-      if (window.showNotification) {
-        window.showNotification(`Removed ${name} from visited list.`, 'info');
-      }
+    var idx = visited.indexOf(id);
+    if (idx !== -1) {
+      visited.splice(idx, 1);
+      if (window.showNotification) window.showNotification('Removed ' + name + ' from visited.', 'info');
     } else {
       visited.push(id);
-      if (window.showNotification) {
-        window.showNotification(`Awesome! Marked ${name} as visited.`, 'success');
-      }
-      // auto remove from planned array if it's now visited
-      const pIndex = planned.indexOf(id);
-      if (pIndex > -1) {
-        planned.splice(pIndex, 1);
-      }
+      if (window.showNotification) window.showNotification(name + ' marked as visited!', 'success');
+      // remove from planned if it was there
+      var pIdx = planned.indexOf(id);
+      if (pIdx !== -1) planned.splice(pIdx, 1);
     }
 
-    // save updated stats to localstorage
     localStorage.setItem('tracker_visited', JSON.stringify(visited));
     localStorage.setItem('tracker_planned', JSON.stringify(planned));
-
-    updateStatsAndList();
+    refreshTracker();
   }
 
-  // toggle selected destination ID in planned storage
   function togglePlanned(id, name) {
-    let visited = [];
-    let planned = [];
+    var visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
+    var planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
 
-    visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
-    planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
-
-    const index = planned.indexOf(id);
-    if (index > -1) {
-      planned.splice(index, 1);
-      if (window.showNotification) {
-        window.showNotification(`Removed ${name} from planned list.`, 'info');
-      }
+    var idx = planned.indexOf(id);
+    if (idx !== -1) {
+      planned.splice(idx, 1);
+      if (window.showNotification) window.showNotification('Removed ' + name + ' from planned.', 'info');
     } else {
       planned.push(id);
-      if (window.showNotification) {
-        window.showNotification(`Added ${name} to planned itineraries.`, 'success');
-      }
-      // Auto remove from visited array since it a future planned trip!
-      const vIndex = visited.indexOf(id);
-      if (vIndex > -1) {
-        visited.splice(vIndex, 1);
-      }
+      if (window.showNotification) window.showNotification(name + ' added to planned trips!', 'success');
+      // remove from visited if was there
+      var vIdx = visited.indexOf(id);
+      if (vIdx !== -1) visited.splice(vIdx, 1);
     }
 
-    // Save back to storage
     localStorage.setItem('tracker_visited', JSON.stringify(visited));
     localStorage.setItem('tracker_planned', JSON.stringify(planned));
-
-    updateStatsAndList();
+    refreshTracker();
   }
 }

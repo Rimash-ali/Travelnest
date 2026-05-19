@@ -1,178 +1,103 @@
-// travelnest core shared script
-// has general setup, navbar code, and custom alert system
+// main.js - shared code that runs on every page
+// handles navbar, scroll effects and notification messages
 
-document.addEventListener('DOMContentLoaded', () => {
-  initNavbar();
-  initHeaderScroll();
-  initRevealOnScroll();
+document.addEventListener('DOMContentLoaded', function() {
+  setupNavbar();
+  setupHeaderScroll();
+  highlightActiveLink();
 });
 
-// custom toast alert mesage function to show succss or error banners
-function showNotification(message, type = 'success', duration = 4000) {
-  // check if container exists, otherwise make a new one
-  let container = document.getElementById('toast-container');
+// simple toast notification - shows a message box at top right
+function showNotification(message, type, duration) {
+  if (!duration) duration = 3500;
+
+  // check if container already exists, make one if not
+  var container = document.getElementById('notif-container');
   if (!container) {
     container = document.createElement('div');
-    container.id = 'toast-container';
-    container.style.cssText = `
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      pointer-events: none;
-      max-width: 380px;
-      width: calc(100% - 48px);
-    `;
+    container.id = 'notif-container';
+    container.style.cssText = 'position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:340px; width:calc(100% - 40px);';
     document.body.appendChild(container);
   }
 
-  // Create toast element
-  const toast = document.createElement('div');
-  toast.className = `toast-message toast-${type}`;
-  
-  // Custom styling dynamically or via CSS classes (CSS preferred, but inline protects behavior)
-  toast.style.cssText = `
-    padding: 12px 18px;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #1e293b;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-left: 5px solid;
-    font-weight: 500;
-    font-size: 0.95rem;
-    pointer-events: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    transform: translateX(120%);
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    opacity: 0;
-  `;
+  // create the notif box
+  var notif = document.createElement('div');
+  notif.style.cssText = 'padding:11px 16px; border-radius:4px; background:#fff; border-left:4px solid #ccc; font-size:0.88rem; box-shadow:2px 2px 8px rgba(0,0,0,0.12); color:#1e293b;';
 
-  // Dynamic path detection for icons
-  const isSubpage = window.location.pathname.includes('/pages/');
-  const iconPathPrefix = isSubpage ? '../assets/icons/' : 'assets/icons/';
-
-  // Color theme logic based on type
+  // change border color depending on type
   if (type === 'success') {
-    toast.style.borderColor = '#10b981'; // Emerald
-    toast.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><img src="${iconPathPrefix}success-badge.png" alt="Success" style="width:16px;height:16px;object-fit:contain;"> ${message}</span>`;
+    notif.style.borderColor = '#16a34a';
   } else if (type === 'error') {
-    toast.style.borderColor = '#ef4444'; // Red
-    toast.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><img src="${iconPathPrefix}error-badge.png" alt="Error" style="width:16px;height:16px;object-fit:contain;"> ${message}</span>`;
+    notif.style.borderColor = '#dc2626';
   } else {
-    toast.style.borderColor = '#3b82f6'; // Blue
-    toast.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><img src="${iconPathPrefix}info-badge.png" alt="Info" style="width:16px;height:16px;object-fit:contain;"> ${message}</span>`;
+    notif.style.borderColor = '#0284c7';
   }
 
-  // Close button
-  const closeBtn = document.createElement('button');
-  closeBtn.innerHTML = '&times;';
-  closeBtn.style.cssText = 'background:none;border:none;font-size:1.3rem;cursor:pointer;color:#94a3b8;line-height:1;padding:0;';
-  closeBtn.onclick = () => removeToast(toast);
-  toast.appendChild(closeBtn);
+  notif.textContent = message;
+  container.appendChild(notif);
 
-  container.appendChild(toast);
-
-  // Trigger animation after adding to DOM
-  setTimeout(() => {
-    toast.style.transform = 'translateX(0)';
-    toast.style.opacity = '1';
-  }, 50);
-
-  // Auto remove
-  const autoRemoveTimer = setTimeout(() => {
-    removeToast(toast);
+  // auto remove after delay
+  setTimeout(function() {
+    if (notif.parentNode) {
+      notif.parentNode.removeChild(notif);
+    }
   }, duration);
+}
 
-  function removeToast(el) {
-    el.style.transform = 'translateX(120%)';
-    el.style.opacity = '0';
-    setTimeout(() => {
-      if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
-    }, 400);
+// mobile nav open logic
+function setupNavbar() {
+  var burger = document.querySelector('.navbar-burger');
+  var menu = document.querySelector('.navbar-menu');
+
+  if (!burger || !menu) return;
+
+  burger.addEventListener('click', function() {
+    // toggle class to show/hide nav
+    if (menu.classList.contains('is-active')) {
+      menu.classList.remove('is-active');
+    } else {
+      menu.classList.add('is-active');
+    }
+  });
+
+  // close menu when any nav link is clicked
+  var links = menu.querySelectorAll('.navbar-item');
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function() {
+      menu.classList.remove('is-active');
+    });
   }
 }
 
-// handles responsive mobile burger menu toggles
-function initNavbar() {
-  const burger = document.querySelector('.navbar-burger');
-  const menu = document.querySelector('.navbar-menu');
-  
-  if (burger && menu) {
-    burger.addEventListener('click', () => {
-      burger.classList.toggle('is-active');
-      menu.classList.toggle('is-active');
-    });
+// adds shadow to header when user scrolls down the page
+function setupHeaderScroll() {
+  var header = document.querySelector('.header');
+  if (!header) return;
 
-    // close menu on clicking links
-    menu.querySelectorAll('.navbar-item').forEach(link => {
-      link.addEventListener('click', () => {
-        burger.classList.remove('is-active');
-        menu.classList.remove('is-active');
-      });
-    });
-  }
-
-  // high-light the active page menu link
-  const currentPath = window.location.pathname;
-  const navLinks = document.querySelectorAll('.navbar-item');
-  navLinks.forEach(link => {
-    const href = link.getAttribute('href');
-    if (href) {
-      // compare links clean path names
-      const cleanHref = href.replace('../', '').replace('./', '');
-      const cleanPath = currentPath.split('/').pop() || 'index.html';
-      
-      if (cleanPath === cleanHref || (cleanPath === 'index.html' && cleanHref === '') || (cleanPath === '' && cleanHref === 'index.html')) {
-        link.classList.add('is-active-link');
-      }
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 40) {
+      header.classList.add('header-scrolled');
+    } else {
+      header.classList.remove('header-scrolled');
     }
   });
 }
 
-// header shrink styling on scroll
-function initHeaderScroll() {
-  const header = document.querySelector('.header');
-  if (header) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        header.classList.add('header-scrolled');
-      } else {
-        header.classList.remove('header-scrolled');
-      }
-    });
+// marks the current page link as active in the nav
+function highlightActiveLink() {
+  var currentPage = window.location.pathname.split('/').pop();
+  if (!currentPage) currentPage = 'index.html';
+
+  var links = document.querySelectorAll('.navbar-item');
+  for (var i = 0; i < links.length; i++) {
+    var href = links[i].getAttribute('href');
+    if (!href) continue;
+    var linkPage = href.split('/').pop();
+    if (linkPage === currentPage) {
+      links[i].classList.add('is-active-link');
+    }
   }
 }
 
-// reveal animations using standard intersection observer
-function initRevealOnScroll() {
-  const revealElements = document.querySelectorAll('.reveal-on-scroll');
-  if ('IntersectionObserver' in window && revealElements.length > 0) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          observer.unobserve(entry.target); // stop observing so it only runs once
-        }
-      });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    });
-
-    revealElements.forEach(el => observer.observe(el));
-  } else {
-    // fallback if browser doesnt support observer
-    revealElements.forEach(el => el.classList.add('revealed'));
-  }
-}
-
-// Global Exports
+// expose showNotification so other scripts can use it
 window.showNotification = showNotification;

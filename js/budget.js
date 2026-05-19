@@ -1,331 +1,227 @@
-// travelnest budget page. calculates and saves budget projections
+// budget.js - trip budget calculator and saved plans
+// lets user estimate total trip cost and save plans to localStorage
 
-document.addEventListener("DOMContentLoaded", () => {
-  initBudgetPlanner();
+document.addEventListener('DOMContentLoaded', function() {
+  setupBudgetPlanner();
 });
 
-function initBudgetPlanner() {
-  const form = document.getElementById("budget-form");
-  const destSelect = document.getElementById("budget-destination");
-  const daysInput = document.getElementById("budget-days");
-  const dailyInput = document.getElementById("budget-daily");
+function setupBudgetPlanner() {
+  var form = document.getElementById('budget-form');
+  var destSelect = document.getElementById('budget-destination');
+  var daysInput = document.getElementById('budget-days');
+  var dailyInput = document.getElementById('budget-daily');
+  var resultPanel = document.getElementById('result-panel');
+  var totalAmountEl = document.getElementById('total-amount');
+  var statusBadgeEl = document.getElementById('status-badge');
+  var progressFill = document.getElementById('progress-fill');
+  var percentEl = document.getElementById('tier-percent');
+  var labelLow = document.getElementById('label-low');
+  var labelMod = document.getElementById('label-mod');
+  var labelLux = document.getElementById('label-lux');
+  var saveBtn = document.getElementById('save-budget-btn');
+  var savedList = document.getElementById('saved-plans-list');
 
-  const resultPanel = document.getElementById("result-panel");
-  const totalAmountEl = document.getElementById("total-amount");
-  const statusBadgeEl = document.getElementById("status-badge");
-  const progressFillEl = document.getElementById("progress-fill");
-  const percentEl = document.getElementById("tier-percent");
+  // stores the last calculation result so we can save it
+  var lastCalc = null;
 
-  const labelLow = document.getElementById("label-low");
-  const labelMod = document.getElementById("label-mod");
-  const labelLux = document.getElementById("label-lux");
-
-  const saveBtn = document.getElementById("save-budget-btn");
-  const savedPlansList = document.getElementById("saved-plans-list");
-
-  // keep track of current budget calculation for saving
-  let currentCalculation = null;
-
-  // add destnations options to select dropdown
+  // fill destination dropdown from data.js array
   if (destSelect && travelDestinations) {
-    travelDestinations.forEach((dest) => {
-      const opt = document.createElement("option");
+    for (var i = 0; i < travelDestinations.length; i++) {
+      var dest = travelDestinations[i];
+      var opt = document.createElement('option');
       opt.value = dest.id;
-      opt.textContent = `${dest.name} (${dest.country})`;
+      opt.textContent = dest.name + ' (' + dest.country + ')';
       destSelect.appendChild(opt);
-    });
+    }
   }
 
-  // load saved plans from localstorage
+  // load saved plans from storage on page load
   renderSavedPlans();
 
-  // submit form action
+  // form submit handler - calculate the budget
   if (form) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const destId = destSelect.value;
-      const days = parseInt(daysInput.value, 10);
-      const dailyBudget = parseFloat(dailyInput.value);
+      var destId = destSelect.value;
+      var days = parseInt(daysInput.value);
+      var daily = parseFloat(dailyInput.value);
 
-      if (
-        !destId ||
-        isNaN(days) ||
-        isNaN(dailyBudget) ||
-        days <= 0 ||
-        dailyBudget <= 0
-      ) {
+      // simple validation
+      if (!destId || isNaN(days) || isNaN(daily) || days <= 0 || daily <= 0) {
         if (window.showNotification) {
-          window.showNotification(
-            "Please fill in all details with positive values.",
-            "error",
-          );
+          window.showNotification('Please fill in all fields correctly.', 'error');
         }
         return;
       }
 
-      // find destination in data
-      const dest = travelDestinations.find((d) => d.id === destId);
+      // find the selected destination in the array
+      var dest = null;
+      for (var i = 0; i < travelDestinations.length; i++) {
+        if (travelDestinations[i].id === destId) {
+          dest = travelDestinations[i];
+          break;
+        }
+      }
       if (!dest) return;
 
-      // get budget tier limits
-      const lowCost =
-        dest.costs.budget.accommodation +
-        dest.costs.budget.food +
-        dest.costs.budget.transport;
-      const modCost =
-        dest.costs.moderate.accommodation +
-        dest.costs.moderate.food +
-        dest.costs.moderate.transport;
-      const luxCost =
-        dest.costs.luxury.accommodation +
-        dest.costs.luxury.food +
-        dest.costs.luxury.transport;
+      // calc daily costs for each tier from the destination data
+      var lowDaily = dest.costs.budget.accommodation + dest.costs.budget.food + dest.costs.budget.transport;
+      var modDaily = dest.costs.moderate.accommodation + dest.costs.moderate.food + dest.costs.moderate.transport;
+      var luxDaily = dest.costs.luxury.accommodation + dest.costs.luxury.food + dest.costs.luxury.transport;
 
-      const totalCost = days * dailyBudget;
+      var totalCost = days * daily;
 
-      // decide budget status tier
-      let status = "";
-      let statusClass = "";
-
-      if (dailyBudget < modCost * 0.85) {
-        status = "Low Budget (Backpacker)";
-        statusClass = "status-low";
-      } else if (dailyBudget >= modCost * 0.85 && dailyBudget < luxCost * 0.8) {
-        status = "Moderate Budget (Comfort)";
-        statusClass = "status-moderate";
+      // work out which tier the user falls into
+      var status = '';
+      var statusClass = '';
+      if (daily < modDaily * 0.85) {
+        status = 'Low Budget (Backpacker)';
+        statusClass = 'status-low';
+      } else if (daily < luxDaily * 0.8) {
+        status = 'Moderate Budget (Comfort)';
+        statusClass = 'status-moderate';
       } else {
-        status = "Luxury Budget (Premium)";
-        statusClass = "status-luxury";
+        status = 'Luxury Budget (Premium)';
+        statusClass = 'status-luxury';
       }
 
-      // calculate progress bar percent
-      const maxRangeVal = luxCost * 1.3; // Cap progress scale slightly above luxury
-      const progressPercent = Math.min(
-        100,
-        Math.round((dailyBudget / maxRangeVal) * 100),
-      );
+      // percentage for progress bar
+      var maxVal = luxDaily * 1.3;
+      var percent = Math.round((daily / maxVal) * 100);
+      if (percent > 100) percent = 100;
 
-      // store object details to save later
-      currentCalculation = {
-        id: "plan_" + Date.now(),
+      // save calculation data so we can save it later
+      lastCalc = {
+        id: 'plan_' + Date.now(),
         destId: dest.id,
         destName: dest.name,
         country: dest.country,
         days: days,
-        dailyBudget: dailyBudget,
+        dailyBudget: daily,
         totalCost: totalCost,
         status: status,
-        statusClass: statusClass,
+        statusClass: statusClass
       };
 
-      // show calculations and trigger count animations
-      displayResults(
-        totalCost,
-        status,
-        statusClass,
-        progressPercent,
-        lowCost,
-        modCost,
-        luxCost,
-      );
+      // show the results
+      showResults(totalCost, status, statusClass, percent, lowDaily, modDaily, luxDaily);
     });
   }
 
-  // handle plan saving click
+  // save button click - adds plan to localStorage list
   if (saveBtn) {
-    saveBtn.addEventListener("click", () => {
-      if (!currentCalculation) return;
+    saveBtn.addEventListener('click', function() {
+      if (!lastCalc) return;
 
-      let savedPlans = [];
-      const stored = localStorage.getItem("saved_budgets");
-      savedPlans = stored ? JSON.parse(stored) : [];
-
-      // add plan to the array
-      savedPlans.unshift(currentCalculation); // Add to beginning
-
-      let success = false;
-      try {
-        localStorage.setItem("saved_budgets", JSON.stringify(savedPlans));
-        success = true;
-      } catch (e) {
-        console.error(e);
+      var stored = localStorage.getItem('saved_budgets');
+      var plans = [];
+      if (stored) {
+        plans = JSON.parse(stored);
       }
 
-      if (success) {
-        if (window.showNotification) {
-          window.showNotification(
-            `Saved budget plan for ${currentCalculation.destName}!`,
-            "success",
-          );
-        }
-        renderSavedPlans();
+      plans.unshift(lastCalc); // add at the beginning
+      localStorage.setItem('saved_budgets', JSON.stringify(plans));
 
-        // clear inputs and state
-        form.reset();
-        resultPanel.style.display = "none";
-        currentCalculation = null;
-      } else {
-        if (window.showNotification) {
-          window.showNotification(
-            "Could not save budget plan. Storage full?",
-            "error",
-          );
-        }
+      if (window.showNotification) {
+        window.showNotification('Budget plan for ' + lastCalc.destName + ' saved!', 'success');
       }
+
+      renderSavedPlans();
+
+      // reset the form
+      form.reset();
+      resultPanel.style.display = 'none';
+      lastCalc = null;
     });
   }
 
-  // display calculated results on page
-  function displayResults(
-    total,
-    status,
-    statusClass,
-    percentage,
-    low,
-    mod,
-    lux,
-  ) {
-    // Show panel
-    resultPanel.style.display = "flex";
+  // shows the result panel with all calculated values
+  function showResults(total, status, statusClass, percent, low, mod, lux) {
+    resultPanel.style.display = 'flex';
 
-    // Animate Counter for Total Cost
-    animateCounter(totalAmountEl, total);
+    // just set the total directly, no animation needed
+    totalAmountEl.textContent = '$' + total.toLocaleString();
 
-    // Set Status Badge classes
-    statusBadgeEl.className = `status-badge ${statusClass}`;
-    statusBadgeEl.innerHTML = ` ${status}`;
+    // update status badge class and text
+    statusBadgeEl.className = 'status-badge ' + statusClass;
+    statusBadgeEl.textContent = status;
 
-    // Set Progress fill width and percent text
-    progressFillEl.style.width = "0%";
-    percentEl.textContent = "0%";
+    // update progress bar width
+    progressFill.style.width = percent + '%';
+    percentEl.textContent = percent + '%';
 
-    setTimeout(() => {
-      progressFillEl.style.width = `${percentage}%`;
-      percentEl.textContent = `${percentage}%`;
-    }, 100);
-
-    // Set low, moderate, luxury indicators
-    labelLow.textContent = `Budget ($${low})`;
-    labelMod.textContent = `Moderate ($${mod})`;
-    labelLux.textContent = `Luxury ($${lux})`;
+    // tier labels below the progress bar
+    labelLow.textContent = 'Budget ($' + low + ')';
+    labelMod.textContent = 'Moderate ($' + mod + ')';
+    labelLux.textContent = 'Luxury ($' + lux + ')';
   }
 
-  // simple count-up animation function for costs
-  function animateCounter(element, targetValue) {
-    let start = 0;
-    const end = targetValue;
-    const duration = 800; // milliseconds
-    const stepTime = Math.abs(Math.floor(duration / (end / 10 || 1)));
-
-    // Safety cap for step time to avoid freezing
-    const actualStepTime = Math.max(stepTime, 20);
-
-    element.textContent = "$0";
-
-    const timer = setInterval(() => {
-      // Linear step increment (speed adjusts based on target value)
-      const increment = Math.ceil(end / 25);
-      start += increment;
-
-      if (start >= end) {
-        element.textContent = `$${end.toLocaleString()}`;
-        clearInterval(timer);
-      } else {
-        element.textContent = `$${start.toLocaleString()}`;
-      }
-    }, actualStepTime);
-  }
-
-  // load and show saved plans from storage
+  // reads localStorage and renders all saved plans
   function renderSavedPlans() {
-    if (!savedPlansList) return;
+    if (!savedList) return;
 
-    let savedPlans = [];
-    const stored = localStorage.getItem("saved_budgets");
-    savedPlans = stored ? JSON.parse(stored) : [];
+    var stored = localStorage.getItem('saved_budgets');
+    var plans = [];
+    if (stored) {
+      plans = JSON.parse(stored);
+    }
 
-    savedPlansList.innerHTML = "";
+    savedList.innerHTML = '';
 
-    if (savedPlans.length === 0) {
-      savedPlansList.innerHTML = `
-        <div class="no-plans">
-          <div class="plans-icon" style="display:flex;justify-content:center;margin-bottom:12px;">
-            <img src="../assets/icons/empty-budget.png" alt="No plans saved" style="width:48px;height:48px;object-fit:contain;">
-          </div>
-          <p>No plans saved yet. Fill out the calculator to save your first budget.</p>
-        </div>
-      `;
+    if (plans.length === 0) {
+      savedList.innerHTML = '<div class="no-plans"><p>No plans saved yet. Fill out the calculator to save your first budget.</p></div>';
       return;
     }
 
-    savedPlans.forEach((plan) => {
-      const card = document.createElement("div");
-      card.className = "saved-plan-card";
-      card.innerHTML = `
-        <div class="saved-plan-info">
-          <div class="saved-plan-dest">${plan.destName}, ${plan.country}</div>
-          <div class="saved-plan-meta" style="display:flex;align-items:center;gap:8px;">
-            <span style="display:inline-flex;align-items:center;gap:6px;">
-              <img src="../assets/icons/calendar-days.png" alt="Days" style="width:12px;height:12px;object-fit:contain;">
-              ${plan.days} Days
-            </span> | 
-            <span style="display:inline-flex;align-items:center;gap:6px;">
-              <img src="../assets/icons/daily-cost.png" alt="Daily Budget" style="width:12px;height:12px;object-fit:contain;">
-              $${plan.dailyBudget}/day
-            </span>
-          </div>
-          <div style="margin-top: 6px;">
-            <span class="status-badge ${plan.statusClass}" style="margin: 0; padding: 2px 10px; font-size: 0.7rem;">${plan.status.split(" ")[0]}</span>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <div class="saved-plan-cost">$${plan.totalCost.toLocaleString()}</div>
-          <button class="delete-btn" data-id="${plan.id}" title="Delete Plan">
-            <img src="../assets/icons/delete-trash.png" alt="Delete" style="width:14px;height:14px;object-fit:contain;">
-          </button>
-        </div>
-      `;
+    // render each saved plan as a card
+    for (var i = 0; i < plans.length; i++) {
+      var plan = plans[i];
+      var card = document.createElement('div');
+      card.className = 'saved-plan-card';
+      card.innerHTML =
+        '<div class="saved-plan-info">' +
+          '<div class="saved-plan-dest">' + plan.destName + ', ' + plan.country + '</div>' +
+          '<div class="saved-plan-meta">' + plan.days + ' days &nbsp;|&nbsp; $' + plan.dailyBudget + '/day</div>' +
+        '</div>' +
+        '<div style="display:flex; align-items:center; gap:12px;">' +
+          '<div class="saved-plan-cost">$' + plan.totalCost.toLocaleString() + '</div>' +
+          '<button class="delete-btn" data-id="' + plan.id + '" title="Delete this plan">✕</button>' +
+        '</div>';
 
-      // delete plan when trash clicked
-      const delBtn = card.querySelector(".delete-btn");
-      delBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        deletePlan(plan.id, plan.destName);
-      });
+      // add delete functionality using a closure to capture correct plan
+      (function(planId, planName) {
+        card.querySelector('.delete-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          deletePlan(planId, planName);
+        });
+      })(plan.id, plan.destName);
 
-      savedPlansList.appendChild(card);
-    });
+      savedList.appendChild(card);
+    }
   }
 
-  // remove selected plan from the array
+  // removes a single saved plan by id
   function deletePlan(id, name) {
-    let savedPlans = [];
-    const stored = localStorage.getItem("saved_budgets");
-    savedPlans = stored ? JSON.parse(stored) : [];
-
-    const filtered = savedPlans.filter((p) => p.id !== id);
-
-    let success = false;
-    try {
-      localStorage.setItem("saved_budgets", JSON.stringify(filtered));
-      success = true;
-    } catch (e) {
-      console.error(e);
+    var stored = localStorage.getItem('saved_budgets');
+    var plans = [];
+    if (stored) {
+      plans = JSON.parse(stored);
     }
 
-    if (success) {
-      if (window.showNotification) {
-        window.showNotification(`Deleted budget plan for ${name}.`, "info");
-      }
-      renderSavedPlans();
-    } else {
-      if (window.showNotification) {
-        window.showNotification(
-          "Could not delete plan. Try clearing browser cache.",
-          "error",
-        );
+    // rebuild array without the deleted one
+    var updated = [];
+    for (var i = 0; i < plans.length; i++) {
+      if (plans[i].id !== id) {
+        updated.push(plans[i]);
       }
     }
+
+    localStorage.setItem('saved_budgets', JSON.stringify(updated));
+
+    if (window.showNotification) {
+      window.showNotification('Deleted plan for ' + name + '.', 'info');
+    }
+    renderSavedPlans();
   }
 }

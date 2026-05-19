@@ -1,273 +1,225 @@
-// explorer page script. filters destnations and displays them
+// explorer.js - destination explorer page
+// handles search, filter, card render and modal popup
 
-document.addEventListener("DOMContentLoaded", () => {
-  initExplorer();
+document.addEventListener('DOMContentLoaded', function() {
+  setupExplorer();
 });
 
-function initExplorer() {
-  // html elements we need
-  const searchInput = document.getElementById("search-name");
-  const typeSelect = document.getElementById("select-type");
-  const continentPillsContainer = document.getElementById("continent-pills");
-  const explorerGrid = document.getElementById("explorer-grid");
+function setupExplorer() {
+  var searchInput = document.getElementById('search-name');
+  var typeSelect = document.getElementById('select-type');
+  var continentContainer = document.getElementById('continent-pills');
+  var grid = document.getElementById('explorer-grid');
+  var modal = document.getElementById('details-modal');
+  var closeBtn = document.getElementById('modal-close-btn');
 
-  const modal = document.getElementById("details-modal");
-  const modalCloseBtn = document.getElementById("modal-close-btn");
+  // current filter state variables
+  var selectedContinent = 'all';
+  var selectedType = 'all';
+  var searchText = '';
 
-  // modal text elements
-  const modalImg = document.getElementById("modal-img");
-  const modalTitle = document.getElementById("modal-title");
-  const modalMeta = document.getElementById("modal-meta");
-  const modalDesc = document.getElementById("modal-desc");
-  const modalAttractions = document.getElementById("modal-attractions");
-  const modalCostsTbody = document.getElementById("modal-costs-tbody");
-
-  // recipe section details
-  const modalRecipeName = document.getElementById("modal-recipe-name");
-  const modalRecipeDiff = document.getElementById("modal-recipe-diff");
-  const modalRecipePrep = document.getElementById("modal-recipe-prep");
-  const modalRecipeDesc = document.getElementById("modal-recipe-desc");
-
-  // workout section details
-  const modalWorkoutName = document.getElementById("modal-workout-name");
-  const modalWorkoutIntensity = document.getElementById(
-    "modal-workout-intensity",
-  );
-  const modalWorkoutCalories = document.getElementById(
-    "modal-workout-calories",
-  );
-  const modalWorkoutDesc = document.getElementById("modal-workout-desc");
-
-  // keep track of filters chosen
-  let activeContinent = "all";
-  let activeSearchQuery = "";
-  let activeExperience = "all";
-
-  // run initial card load
+  // render all cards on load
   renderCards();
 
-  // deep-linking checks: if id url param is set, popup the modal
-  const urlParams = new URLSearchParams(window.location.search);
-  const targetId = urlParams.get("id");
+  // check if a destination id was passed in the url (for deep linking)
+  var params = new URLSearchParams(window.location.search);
+  var targetId = params.get('id');
   if (targetId) {
-    const targetDest = travelDestinations.find((d) => d.id === targetId);
-    if (targetDest) {
-      openModal(targetDest);
-    }
+    var dest = findById(targetId);
+    if (dest) openModal(dest);
   }
 
-  // event listeners to trigger filters on user input
+  // search box listener
   if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      activeSearchQuery = e.target.value.toLowerCase().trim();
+    searchInput.addEventListener('input', function() {
+      searchText = searchInput.value.toLowerCase().trim();
       renderCards();
     });
   }
 
+  // experience type dropdown
   if (typeSelect) {
-    typeSelect.addEventListener("change", (e) => {
-      activeExperience = e.target.value;
+    typeSelect.addEventListener('change', function() {
+      selectedType = typeSelect.value;
       renderCards();
     });
   }
 
-  if (continentPillsContainer) {
-    const pills = continentPillsContainer.querySelectorAll(".pill");
-    pills.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        // toggle active class for pills
-        pills.forEach((p) => p.classList.remove("is-active"));
-        pill.classList.add("is-active");
-
-        activeContinent = pill.getAttribute("data-continent");
+  // continent pill buttons
+  if (continentContainer) {
+    var pills = continentContainer.querySelectorAll('.pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].addEventListener('click', function() {
+        // remove active from all pills then set on clicked one
+        for (var j = 0; j < pills.length; j++) {
+          pills[j].classList.remove('is-active');
+        }
+        this.classList.add('is-active');
+        selectedContinent = this.getAttribute('data-continent');
         renderCards();
       });
-    });
-  }
-
-  // close the modal dialog when clicking button
-  if (modalCloseBtn) {
-    modalCloseBtn.addEventListener("click", closeModal);
-  }
-
-  if (modal) {
-    // close when clicking outside container
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
-  }
-
-  // Escape key to close modal
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("is-active")) {
-      closeModal();
     }
+  }
+
+  // close modal button
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      closeModal();
+    });
+  }
+
+  // clicking outside modal closes it
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  // escape key also closes modal
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
   });
 
-  // filter and render cards depending on selection
+  // filters data and renders destination cards
   function renderCards() {
-    if (!explorerGrid) return;
+    if (!grid) return;
+    grid.innerHTML = '';
 
-    explorerGrid.innerHTML = "";
+    var results = [];
 
-    const filtered = travelDestinations.filter((dest) => {
-      // 1. filter by continent
-      const matchesContinent =
-        activeContinent === "all" || dest.continent === activeContinent;
+    // go through all destinations and check filters
+    for (var i = 0; i < travelDestinations.length; i++) {
+      var d = travelDestinations[i];
 
-      // 2. filter by style type
-      const matchesExperience =
-        activeExperience === "all" || dest.travelType === activeExperience;
+      var continentOk = (selectedContinent === 'all' || d.continent === selectedContinent);
+      var typeOk = (selectedType === 'all' || d.travelType === selectedType);
+      var searchOk = (searchText === '' ||
+        d.name.toLowerCase().indexOf(searchText) !== -1 ||
+        d.country.toLowerCase().indexOf(searchText) !== -1);
 
-      // 3. search filter matching country/name text
-      const matchesSearch =
-        activeSearchQuery === "" ||
-        dest.name.toLowerCase().includes(activeSearchQuery) ||
-        dest.country.toLowerCase().includes(activeSearchQuery);
+      if (continentOk && typeOk && searchOk) {
+        results.push(d);
+      }
+    }
 
-      return matchesContinent && matchesExperience && matchesSearch;
-    });
-
-    if (filtered.length === 0) {
-      explorerGrid.innerHTML = `
-        <div class="no-results reveal-on-scroll revealed">
-          <div style="margin-bottom: 16px; display: flex; justify-content: center;">
-            <img src="../assets/icons/world-globe.png" alt="No Results" style="width:48px;height:48px;object-fit:contain;">
-          </div>
-          <h3>No Destinations Found</h3>
-          <p>Try refining your search text or filters to find another getaway.</p>
-        </div>
-      `;
+    // show message if nothing matched
+    if (results.length === 0) {
+      grid.innerHTML = '<div class="no-results"><h3>No Destinations Found</h3><p>Try adjusting your filters or search term.</p></div>';
       return;
     }
 
-    filtered.forEach((dest) => {
-      const card = document.createElement("div");
-      card.className = "dest-card reveal-on-scroll revealed";
+    // build a card for each result
+    for (var i = 0; i < results.length; i++) {
+      var dest = results[i];
 
-      const imgUrl = dest.image.startsWith("assets")
-        ? "../" + dest.image
-        : dest.image;
+      // fix path since we are inside /pages/ subfolder
+      var imgUrl = dest.image;
+      if (imgUrl.indexOf('assets') === 0) {
+        imgUrl = '../' + imgUrl;
+      }
 
-      card.innerHTML = `
-        <div class="dest-img-box">
-          <img src="${imgUrl}" alt="${dest.name}" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
-          <span class="dest-type-badge">${dest.travelType}</span>
-        </div>
-        <div class="dest-info">
-          <div class="dest-card-meta">
-            <span style="display:inline-flex;align-items:center;gap:6px;">
-              <img src="../assets/icons/world-globe.png" alt="Continent" style="width:14px;height:14px;object-fit:contain;">
-              ${dest.continent}
-            </span>
-            <span style="display:inline-flex;align-items:center;gap:6px;">
-              <img src="../assets/icons/wallet-cost.png" alt="Budget" style="width:14px;height:14px;object-fit:contain;">
-              ${dest.budgetRange.toUpperCase()}
-            </span>
-          </div>
-          <h3 class="dest-card-title">${dest.name}, ${dest.country}</h3>
-          <p class="dest-card-desc">${dest.description}</p>
-          <div class="dest-card-footer">
-            <span>View Details</span>
-            <span>→</span>
-          </div>
-        </div>
-      `;
+      var card = document.createElement('div');
+      card.className = 'dest-card';
+      card.innerHTML =
+        '<div class="dest-img-box">' +
+          '<img src="' + imgUrl + '" alt="' + dest.name + '" class="dest-card-img" onerror="this.src=\'../assets/placeholder.jpg\'">' +
+          '<span class="dest-type-badge">' + dest.travelType + '</span>' +
+        '</div>' +
+        '<div class="dest-info">' +
+          '<div class="dest-card-meta">' +
+            '<span>🌍 ' + dest.continent + '</span>' +
+            '<span>💰 ' + dest.budgetRange.toUpperCase() + '</span>' +
+          '</div>' +
+          '<h3 class="dest-card-title">' + dest.name + ', ' + dest.country + '</h3>' +
+          '<p class="dest-card-desc">' + dest.description + '</p>' +
+          '<div class="dest-card-footer"><span>View Details</span><span>→</span></div>' +
+        '</div>';
 
-      card.addEventListener("click", () => {
-        openModal(dest);
-      });
+      // use closure to capture dest in the loop correctly
+      (function(destination) {
+        card.addEventListener('click', function() {
+          openModal(destination);
+        });
+      })(dest);
 
-      explorerGrid.appendChild(card);
-    });
+      grid.appendChild(card);
+    }
   }
 
-  // shows details popup modal with recipes and workouts
+  // finds a destination object by its id
+  function findById(id) {
+    for (var i = 0; i < travelDestinations.length; i++) {
+      if (travelDestinations[i].id === id) return travelDestinations[i];
+    }
+    return null;
+  }
+
+  // opens the detail modal and fills it with destination data
+  // this section was little tricky to get all elements lined up
   function openModal(dest) {
-    const imgUrl = dest.image.startsWith("assets")
-      ? "../" + dest.image
-      : dest.image;
-    modalImg.src = imgUrl;
-    modalImg.alt = dest.name;
-    modalTitle.textContent = `${dest.name}, ${dest.country}`;
+    var imgUrl = dest.image;
+    if (imgUrl.indexOf('assets') === 0) imgUrl = '../' + imgUrl;
 
-    modalMeta.innerHTML = `
-      <span style="display:inline-flex;align-items:center;gap:6px;">
-        <img src="../assets/icons/world-globe.png" alt="Continent" style="width:14px;height:14px;object-fit:contain;">
-        ${dest.continent}
-      </span>
-      <span style="display:inline-flex;align-items:center;gap:6px;">
-        <img src="../assets/icons/explorer.png" alt="Vibe" style="width:14px;height:14px;object-fit:contain;">
-        ${dest.travelType.toUpperCase()}
-      </span>
-      <span style="display:inline-flex;align-items:center;gap:6px;">
-        <img src="../assets/icons/wallet-cost.png" alt="Budget" style="width:14px;height:14px;object-fit:contain;">
-        ${dest.budgetRange.toUpperCase()} BUDGET
-      </span>
-    `;
+    document.getElementById('modal-img').src = imgUrl;
+    document.getElementById('modal-img').alt = dest.name;
+    document.getElementById('modal-title').textContent = dest.name + ', ' + dest.country;
 
-    modalDesc.textContent = dest.description;
+    document.getElementById('modal-meta').innerHTML =
+      '<span>🌍 ' + dest.continent + '</span> &nbsp;' +
+      '<span>🧭 ' + dest.travelType.toUpperCase() + '</span> &nbsp;' +
+      '<span>💰 ' + dest.budgetRange.toUpperCase() + ' BUDGET</span>';
 
-    // fill in attractions list
-    modalAttractions.innerHTML = "";
-    dest.attractions.forEach((att) => {
-      const li = document.createElement("li");
-      li.innerHTML = `<span style="color:var(--accent-teal);margin-right:8px;font-weight:bold;">✓</span>${att}`;
-      modalAttractions.appendChild(li);
-    });
+    document.getElementById('modal-desc').textContent = dest.description;
 
-    // cost details table calculation
-    modalCostsTbody.innerHTML = "";
-    const tiers = ["budget", "moderate", "luxury"];
+    // attractions list
+    var attrList = document.getElementById('modal-attractions');
+    attrList.innerHTML = '';
+    for (var i = 0; i < dest.attractions.length; i++) {
+      var li = document.createElement('li');
+      li.textContent = dest.attractions[i];
+      attrList.appendChild(li);
+    }
 
-    tiers.forEach((tier) => {
-      const costData = dest.costs[tier];
-      const dailyTotal =
-        costData.accommodation + costData.food + costData.transport;
+    // cost table rows
+    var tbody = document.getElementById('modal-costs-tbody');
+    tbody.innerHTML = '';
+    var tiers = ['budget', 'moderate', 'luxury'];
+    for (var i = 0; i < tiers.length; i++) {
+      var tier = tiers[i];
+      var costs = dest.costs[tier];
+      var total = costs.accommodation + costs.food + costs.transport;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td style="text-transform:capitalize; font-weight:bold;">' + tier + '</td>' +
+        '<td>$' + costs.accommodation + '/day</td>' +
+        '<td>$' + costs.food + '/day</td>' +
+        '<td>$' + costs.transport + '/day</td>' +
+        '<td style="color:var(--accent-blue); font-weight:bold;">$' + total + '/day</td>';
+      tbody.appendChild(tr);
+    }
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td style="text-transform: capitalize; font-weight: 700;">${tier}</td>
-        <td>$${costData.accommodation}/day</td>
-        <td>$${costData.food}/day</td>
-        <td>$${costData.transport}/day</td>
-        <td style="color: var(--accent-blue); font-weight: 700;">$${dailyTotal}/day</td>
-      `;
-      modalCostsTbody.appendChild(tr);
-    });
-
-    // setup local recipes details
+    // recipe details
     if (dest.recipeData) {
-      modalRecipeName.textContent = dest.recipeData.dishName;
-      modalRecipeDiff.textContent = dest.recipeData.difficulty;
-      modalRecipePrep.textContent = dest.recipeData.prepTime;
-      modalRecipeDesc.textContent = `Instructions: ${dest.recipeData.instructions}`;
-    } else {
-      modalRecipeName.textContent = "N/A";
-      modalRecipeDesc.textContent = "No specific recipe data available.";
+      document.getElementById('modal-recipe-name').textContent = dest.recipeData.dishName;
+      document.getElementById('modal-recipe-diff').textContent = dest.recipeData.difficulty;
+      document.getElementById('modal-recipe-prep').textContent = dest.recipeData.prepTime;
+      document.getElementById('modal-recipe-desc').textContent = 'Instructions: ' + dest.recipeData.instructions;
     }
 
-    // setup travel fitness activities
+    // workout details
     if (dest.workoutData) {
-      modalWorkoutName.textContent = dest.workoutData.activityName;
-      modalWorkoutIntensity.textContent = dest.workoutData.intensity;
-      modalWorkoutCalories.textContent = dest.workoutData.caloriesBurned;
-      modalWorkoutDesc.textContent = `${dest.workoutData.description} (Duration: ${dest.workoutData.duration})`;
-    } else {
-      modalWorkoutName.textContent = "N/A";
-      modalWorkoutDesc.textContent = "No workout activities registered.";
+      document.getElementById('modal-workout-name').textContent = dest.workoutData.activityName;
+      document.getElementById('modal-workout-intensity').textContent = dest.workoutData.intensity;
+      document.getElementById('modal-workout-calories').textContent = dest.workoutData.caloriesBurned;
+      document.getElementById('modal-workout-desc').textContent = dest.workoutData.description + ' (Duration: ' + dest.workoutData.duration + ')';
     }
 
-    // open the dialog window
-    modal.classList.add("is-active");
-    document.body.style.overflow = "hidden"; // stop page body scrolling behind modal
+    modal.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
   }
 
-  // closes the dialog modal
   function closeModal() {
-    modal.classList.remove("is-active");
-    document.body.style.overflow = ""; // re-enable body scroll
+    modal.classList.remove('is-active');
+    document.body.style.overflow = '';
   }
 }

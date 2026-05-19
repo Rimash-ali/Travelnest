@@ -1,282 +1,261 @@
-// travelnest random trip generator script
+// generator.js - random trip generator
+// picks a matching destination based on user preferences
 
-document.addEventListener("DOMContentLoaded", () => {
-  initGenerator();
+document.addEventListener('DOMContentLoaded', function() {
+  setupGenerator();
 });
 
-function initGenerator() {
-  const surpriseBtn = document.getElementById("gen-surprise-btn");
-  const typeSelect = document.getElementById("gen-type");
-  const budgetSelect = document.getElementById("gen-budget");
+function setupGenerator() {
+  var surpriseBtn = document.getElementById('gen-surprise-btn');
+  var typeSelect = document.getElementById('gen-type');
+  var budgetSelect = document.getElementById('gen-budget');
+  var loader = document.getElementById('gen-loader');
+  var resultCard = document.getElementById('gen-result-card');
 
-  const loader = document.getElementById("gen-loader");
-  const resultCard = document.getElementById("gen-result-card");
+  var resultImg = document.getElementById('result-img');
+  var resultTypeBadge = document.getElementById('result-type-badge');
+  var resultFallbackBadge = document.getElementById('result-fallback-badge');
+  var resultTitle = document.getElementById('result-title');
+  var resultContinent = document.getElementById('result-continent');
+  var resultBudget = document.getElementById('result-budget');
+  var resultDesc = document.getElementById('result-description');
+  var wishlistBtn = document.getElementById('add-wishlist-btn');
+  var explorerLink = document.getElementById('explorer-link-btn');
+  var wishlistContainer = document.getElementById('wishlist-container');
 
-  // text fields inside result card
-  const resultImg = document.getElementById("result-img");
-  const resultTypeBadge = document.getElementById("result-type-badge");
-  const resultFallbackBadge = document.getElementById("result-fallback-badge");
-  const resultTitle = document.getElementById("result-title");
-  const resultContinent = document.getElementById("result-continent");
-  const resultBudget = document.getElementById("result-budget");
-  const resultDesc = document.getElementById("result-description");
+  // this stores the current shown destination
+  var currentDest = null;
 
-  const wishlistBtn = document.getElementById("add-wishlist-btn");
-  const explorerLink = document.getElementById("explorer-link-btn");
-  const wishlistContainer = document.getElementById("wishlist-container");
-
-  let currentDestination = null;
-
-  // run render on start to load wishlist
+  // show wishlist on load
   renderWishlist();
 
-  // trigger surprise selection click
   if (surpriseBtn) {
-    surpriseBtn.addEventListener("click", () => {
-      const type = typeSelect.value;
-      const budget = budgetSelect.value;
+    surpriseBtn.addEventListener('click', function() {
+      var type = typeSelect.value;
+      var budget = budgetSelect.value;
 
-      // hide previous result card, popup loader
-      resultCard.style.display = "none";
-      loader.style.display = "flex";
+      // show loader and hide old result
+      resultCard.style.display = 'none';
+      loader.style.display = 'flex';
       surpriseBtn.disabled = true;
 
-      // delay 1.2 seconds for dramatic effect
-      setTimeout(() => {
-        // Hide loader
-        loader.style.display = "none";
+      // short delay to show the loader, then show result
+      setTimeout(function() {
+        loader.style.display = 'none';
         surpriseBtn.disabled = false;
-
-        // select and show surprise option
-        selectDestination(type, budget);
-      }, 1200);
+        findAndShowDestination(type, budget);
+      }, 1100);
     });
   }
 
-  // logic to filter matching options or fall back if none
-  function selectDestination(type, budget) {
-    // Attempt exact match
-    let matches = travelDestinations.filter(
-      (d) => d.travelType === type && d.budgetRange === budget,
-    );
-    let isFallback = false;
+  // tries to find a matching destination with fallbacks
+  function findAndShowDestination(type, budget) {
+    var matches = [];
+    var isFallback = false;
 
+    // first try exact match on type and budget
+    for (var i = 0; i < travelDestinations.length; i++) {
+      if (travelDestinations[i].travelType === type && travelDestinations[i].budgetRange === budget) {
+        matches.push(travelDestinations[i]);
+      }
+    }
+
+    // fallback 1 - match only by travel type
     if (matches.length === 0) {
-      // fallback 1: look for matching experience style type
-      matches = travelDestinations.filter((d) => d.travelType === type);
       isFallback = true;
-
-      if (matches.length === 0) {
-        // fallback 2: look for matching budget cost
-        matches = travelDestinations.filter((d) => d.budgetRange === budget);
-
-        if (matches.length === 0) {
-          // fallback 3: pick any random choice
-          matches = travelDestinations;
+      for (var i = 0; i < travelDestinations.length; i++) {
+        if (travelDestinations[i].travelType === type) {
+          matches.push(travelDestinations[i]);
         }
       }
     }
 
-    // select random item from matches list
-    const randomIndex = Math.floor(Math.random() * matches.length);
-    const selection = matches[randomIndex];
-    currentDestination = selection;
+    // fallback 2 - match only by budget range
+    if (matches.length === 0) {
+      for (var i = 0; i < travelDestinations.length; i++) {
+        if (travelDestinations[i].budgetRange === budget) {
+          matches.push(travelDestinations[i]);
+        }
+      }
+    }
 
-    // show card info
-    displayDestination(selection, isFallback);
+    // last resort - use all destinations
+    if (matches.length === 0) {
+      matches = travelDestinations;
+    }
+
+    // pick randomly from the matched list
+    var randomIndex = Math.floor(Math.random() * matches.length);
+    currentDest = matches[randomIndex];
+
+    showDestination(currentDest, isFallback);
   }
 
-  // displays chosen destination card
-  function displayDestination(dest, isFallback) {
-    const imgUrl = dest.image.startsWith("assets")
-      ? "../" + dest.image
-      : dest.image;
+  // fills result card with destination info
+  function showDestination(dest, isFallback) {
+    var imgUrl = dest.image;
+    if (imgUrl.indexOf('assets') === 0) {
+      imgUrl = '../' + imgUrl;
+    }
+
     resultImg.src = imgUrl;
     resultImg.alt = dest.name;
-    resultTitle.textContent = `${dest.name}, ${dest.country}`;
+    resultTitle.textContent = dest.name + ', ' + dest.country;
     resultTypeBadge.textContent = dest.travelType;
-
-    resultContinent.innerHTML = ` ${dest.continent}`;
-    resultBudget.innerHTML = ` ${dest.budgetRange.toUpperCase()} BUDGET`;
+    resultContinent.textContent = dest.continent;
+    resultBudget.textContent = dest.budgetRange.toUpperCase() + ' BUDGET';
     resultDesc.textContent = dest.description;
+    explorerLink.href = './explorer.html?id=' + dest.id;
 
-    // Link to explorer page with ID query param
-    explorerLink.href = `./explorer.html?id=${dest.id}`;
-
-    // Fallback badge visibility
+    // show alt badge if its not an exact filter match
     if (isFallback) {
-      resultFallbackBadge.textContent = "Recommended Alt Match";
-      resultFallbackBadge.style.display = "block";
+      resultFallbackBadge.textContent = 'Alt Match';
+      resultFallbackBadge.style.display = 'block';
     } else {
-      resultFallbackBadge.style.display = "none";
+      resultFallbackBadge.style.display = 'none';
     }
 
-    // Wishlist Button Icon reset based on existence
-    updateWishlistButtonState(dest.id);
-
-    // Show card
-    resultCard.style.display = "block";
+    updateWishlistBtn(dest.id);
+    resultCard.style.display = 'block';
   }
 
-  // checks if card is already in wishlist and updates heart button
-  function updateWishlistButtonState(id) {
-    let wishlist = [];
-    const stored = localStorage.getItem("wishlist_destinations");
-    wishlist = stored ? JSON.parse(stored) : [];
+  // updates the wishlist button to show if already saved
+  function updateWishlistBtn(id) {
+    var stored = localStorage.getItem('wishlist_destinations');
+    var wishlist = [];
+    if (stored) wishlist = JSON.parse(stored);
 
-    const exists = wishlist.some((item) => item.id === id);
-    if (exists) {
-      wishlistBtn.innerHTML = `<img src="../assets/icons/heart-filled.png" alt="Heart" style="width:14px;height:14px;object-fit:contain;margin-right:6px;"> Wishlisted`;
-      wishlistBtn.classList.remove("btn-primary");
-      wishlistBtn.classList.add("btn-outline");
+    var alreadySaved = false;
+    for (var i = 0; i < wishlist.length; i++) {
+      if (wishlist[i].id === id) {
+        alreadySaved = true;
+        break;
+      }
+    }
+
+    if (alreadySaved) {
+      wishlistBtn.textContent = '❤ Wishlisted';
+      wishlistBtn.classList.remove('btn-primary');
+      wishlistBtn.classList.add('btn-outline');
     } else {
-      wishlistBtn.innerHTML = `<img src="../assets/icons/heart-outline.png" alt="Heart" style="width:14px;height:14px;object-fit:contain;margin-right:6px;"> Add to Wishlist`;
-      wishlistBtn.classList.remove("btn-outline");
-      wishlistBtn.classList.add("btn-primary");
+      wishlistBtn.textContent = '♡ Add to Wishlist';
+      wishlistBtn.classList.remove('btn-outline');
+      wishlistBtn.classList.add('btn-primary');
     }
   }
 
-  // click on heart button to add/remove
+  // this stores the users wishlist in localStorage
   if (wishlistBtn) {
-    wishlistBtn.addEventListener("click", () => {
-      if (!currentDestination) return;
+    wishlistBtn.addEventListener('click', function() {
+      if (!currentDest) return;
 
-      let wishlist = [];
-      const stored = localStorage.getItem("wishlist_destinations");
-      wishlist = stored ? JSON.parse(stored) : [];
+      var stored = localStorage.getItem('wishlist_destinations');
+      var wishlist = [];
+      if (stored) wishlist = JSON.parse(stored);
 
-      const index = wishlist.findIndex(
-        (item) => item.id === currentDestination.id,
-      );
-
-      if (index > -1) {
-        // delete from wishlist
-        wishlist.splice(index, 1);
-        localStorage.setItem(
-          "wishlist_destinations",
-          JSON.stringify(wishlist),
-        );
-
-        if (window.showNotification) {
-          window.showNotification(
-            `Removed ${currentDestination.name} from wishlist.`,
-            "info",
-          );
-        }
-      } else {
-        // append to wishlist
-        wishlist.push({
-          id: currentDestination.id,
-          name: currentDestination.name,
-          country: currentDestination.country,
-          image: currentDestination.image,
-          continent: currentDestination.continent,
-          travelType: currentDestination.travelType,
-        });
-
-        localStorage.setItem(
-          "wishlist_destinations",
-          JSON.stringify(wishlist),
-        );
-
-        if (window.showNotification) {
-          window.showNotification(
-            `Added ${currentDestination.name} to wishlist!`,
-            "success",
-          );
+      // check if already in list
+      var foundIdx = -1;
+      for (var i = 0; i < wishlist.length; i++) {
+        if (wishlist[i].id === currentDest.id) {
+          foundIdx = i;
+          break;
         }
       }
 
-      updateWishlistButtonState(currentDestination.id);
+      if (foundIdx !== -1) {
+        // remove from list
+        wishlist.splice(foundIdx, 1);
+        localStorage.setItem('wishlist_destinations', JSON.stringify(wishlist));
+        if (window.showNotification) window.showNotification('Removed from wishlist.', 'info');
+      } else {
+        // add to list
+        wishlist.push({
+          id: currentDest.id,
+          name: currentDest.name,
+          country: currentDest.country,
+          image: currentDest.image,
+          continent: currentDest.continent,
+          travelType: currentDest.travelType
+        });
+        localStorage.setItem('wishlist_destinations', JSON.stringify(wishlist));
+        if (window.showNotification) window.showNotification('Added ' + currentDest.name + ' to wishlist!', 'success');
+      }
+
+      updateWishlistBtn(currentDest.id);
       renderWishlist();
     });
   }
 
-  // render wishlist sidebar content
+  // renders wishlist sidebar from localStorage
   function renderWishlist() {
     if (!wishlistContainer) return;
 
-    let wishlist = [];
-    const stored = localStorage.getItem("wishlist_destinations");
-    wishlist = stored ? JSON.parse(stored) : [];
+    var stored = localStorage.getItem('wishlist_destinations');
+    var wishlist = [];
+    if (stored) wishlist = JSON.parse(stored);
 
-    wishlistContainer.innerHTML = "";
+    wishlistContainer.innerHTML = '';
 
     if (wishlist.length === 0) {
-      wishlistContainer.innerHTML = `
-        <div class="wishlist-empty">
-          <div class="empty-heart" style="display:flex;justify-content:center;margin-bottom:12px;">
-            <img src="../assets/icons/heart-outline.png" alt="Empty wishlist" style="width:48px;height:48px;object-fit:contain;">
-          </div>
-          <p>Your wishlist is empty. Generate a trip and click "Add to Wishlist" to save it.</p>
-        </div>
-      `;
+      wishlistContainer.innerHTML = '<div class="wishlist-empty"><p>Your wishlist is empty. Generate a trip and click "Add to Wishlist" to save it.</p></div>';
       return;
     }
 
-    wishlist.forEach((item) => {
-      const el = document.createElement("div");
-      el.className = "wishlist-item";
+    // loop and render each item
+    for (var i = 0; i < wishlist.length; i++) {
+      var item = wishlist[i];
+      var imgUrl = item.image;
+      if (imgUrl.indexOf('assets') === 0) imgUrl = '../' + imgUrl;
 
-      const itemImgUrl = item.image.startsWith("assets")
-        ? "../" + item.image
-        : item.image;
-      el.innerHTML = `
-        <div class="wishlist-details" style="cursor: pointer;">
-          <img src="${itemImgUrl}" alt="${item.name}" class="wishlist-thumb" onerror="this.src='../assets/placeholder.jpg'">
-          <div class="wishlist-info">
-            <h4>${item.name}</h4>
-            <p>${item.country} | ${item.travelType.toUpperCase()}</p>
-          </div>
-        </div>
-        <button class="wishlist-delete" data-id="${item.id}" title="Remove from Wishlist">
-          <img src="../assets/icons/delete-trash.png" alt="Remove" style="width:14px;height:14px;object-fit:contain;">
-        </button>
-      `;
+      var el = document.createElement('div');
+      el.className = 'wishlist-item';
+      el.innerHTML =
+        '<div class="wishlist-details" style="cursor:pointer;">' +
+          '<img src="' + imgUrl + '" alt="' + item.name + '" class="wishlist-thumb" onerror="this.src=\'../assets/placeholder.jpg\'">' +
+          '<div class="wishlist-info">' +
+            '<h4>' + item.name + '</h4>' +
+            '<p>' + item.country + ' | ' + item.travelType.toUpperCase() + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<button class="wishlist-delete" data-id="' + item.id + '" title="Remove">✕</button>';
 
-      // click wishlist item to go to explorer page
-      const detailsNode = el.querySelector(".wishlist-details");
-      detailsNode.addEventListener("click", () => {
-        window.location.href = `./explorer.html?id=${item.id}`;
-      });
+      // clicking the item card links to explorer
+      (function(itemId) {
+        el.querySelector('.wishlist-details').addEventListener('click', function() {
+          window.location.href = './explorer.html?id=' + itemId;
+        });
+      })(item.id);
 
-      // remove item when trash clicked
-      const delBtn = el.querySelector(".wishlist-delete");
-      delBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        removeFromWishlist(item.id, item.name);
-      });
+      // delete button
+      (function(itemId, itemName) {
+        el.querySelector('.wishlist-delete').addEventListener('click', function(e) {
+          e.stopPropagation();
+          removeFromWishlist(itemId, itemName);
+        });
+      })(item.id, item.name);
 
       wishlistContainer.appendChild(el);
-    });
+    }
   }
 
-  // helper function to delete item from wishlist
+  // removes one item from wishlist by id
   function removeFromWishlist(id, name) {
-    let wishlist = [];
-    const stored = localStorage.getItem("wishlist_destinations");
-    wishlist = stored ? JSON.parse(stored) : [];
+    var stored = localStorage.getItem('wishlist_destinations');
+    var wishlist = [];
+    if (stored) wishlist = JSON.parse(stored);
 
-    const filtered = wishlist.filter((item) => item.id !== id);
-
-    let success = false;
-    try {
-      localStorage.setItem("wishlist_destinations", JSON.stringify(filtered));
-      success = true;
-    } catch (e) {
-      console.error(e);
+    var updated = [];
+    for (var i = 0; i < wishlist.length; i++) {
+      if (wishlist[i].id !== id) updated.push(wishlist[i]);
     }
 
-    if (success) {
-      if (window.showNotification) {
-        window.showNotification(`Removed ${name} from wishlist.`, "info");
-      }
-      renderWishlist();
+    localStorage.setItem('wishlist_destinations', JSON.stringify(updated));
+    if (window.showNotification) window.showNotification('Removed ' + name + ' from wishlist.', 'info');
+    renderWishlist();
 
-      // toggle display status if card currently shown
-      if (currentDestination && currentDestination.id === id) {
-        updateWishlistButtonState(id);
-      }
+    // update button if this was the current shown dest
+    if (currentDest && currentDest.id === id) {
+      updateWishlistBtn(id);
     }
   }
 }
