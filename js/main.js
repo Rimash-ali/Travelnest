@@ -25,7 +25,7 @@ function showNotification(message, type, duration) {
 
   // create the notif box
   var notif = document.createElement('div');
-  notif.style.cssText = 'padding:11px 16px; border-radius:4px; background:#fff; border-left:4px solid #ccc; font-size:0.88rem; box-shadow:2px 2px 8px rgba(0,0,0,0.12); color:#1e293b;';
+  notif.style.cssText = 'padding:11px 16px; border-radius:4px; background:#1e293b; border-left:4px solid #ccc; font-size:0.88rem; box-shadow:2px 4px 12px rgba(0,0,0,0.25); color:#f8fafc;';
 
   // change border color depending on type
   if (type === 'success') {
