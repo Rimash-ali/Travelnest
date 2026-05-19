@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupHeaderScroll();
   highlightActiveLink();
   setupScrollReveal();
+  setupNewsletterForm();
   registerServiceWorker();
 });
 
@@ -142,3 +143,37 @@ function registerServiceWorker() {
 
 // expose showNotification so other scripts can use it
 window.showNotification = showNotification;
+
+// newsletter form - saves email to localStorage
+// this runs on every page since the footer is on all pages
+function setupNewsletterForm() {
+  var form = document.getElementById('newsletter-form');
+  var emailInput = document.getElementById('newsletter-email');
+  if (!form || !emailInput) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var email = emailInput.value.trim();
+    if (!email) return;
+
+    // get existing emails from storage
+    var stored = localStorage.getItem('newsletter_emails');
+    var emails = [];
+    if (stored) {
+      emails = JSON.parse(stored);
+    }
+
+    // dont save duplicates
+    if (emails.indexOf(email) !== -1) {
+      showNotification('You are already subscribed!', 'info');
+      form.reset();
+      return;
+    }
+
+    // add the email and save back to localStorage
+    emails.push(email);
+    localStorage.setItem('newsletter_emails', JSON.stringify(emails));
+    showNotification('Thanks for subscribing!', 'success');
+    form.reset();
+  });
+}

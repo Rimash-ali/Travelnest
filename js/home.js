@@ -4,7 +4,6 @@
 document.addEventListener('DOMContentLoaded', function() {
   startQuoteRotation();
   loadDestinationOfTheDay();
-  setupNewsletterForm();
 });
 
 // rotates travel quotes in the hero section every few seconds
@@ -67,42 +66,4 @@ function loadDestinationOfTheDay() {
         '</div>' +
       '</div>' +
     '</div>';
-}
-
-// newsletter form - saves email to localStorage
-function setupNewsletterForm() {
-  var form = document.getElementById('newsletter-form');
-  var emailInput = document.getElementById('newsletter-email');
-  if (!form || !emailInput) return;
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    var email = emailInput.value.trim();
-    if (!email) return;
-
-    // get existing emails from storage
-    var stored = localStorage.getItem('newsletter_emails');
-    var emails = [];
-    if (stored) {
-      emails = JSON.parse(stored);
-    }
-
-    // dont save duplicates
-    if (emails.indexOf(email) !== -1) {
-      if (window.showNotification) {
-        window.showNotification('You are already subscribed!', 'info');
-      }
-      form.reset();
-      return;
-    }
-
-    // add and save
-    emails.push(email);
-    localStorage.setItem('newsletter_emails', JSON.stringify(emails));
-
-    if (window.showNotification) {
-      window.showNotification('Thanks for subscribing!', 'success');
-    }
-    form.reset();
-  });
 }
