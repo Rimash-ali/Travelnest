@@ -3,7 +3,6 @@
 
 document.addEventListener('DOMContentLoaded', function() {
   setupNavbar();
-  setupDarkMode();
   setupHeaderScroll();
   highlightActiveLink();
   setupScrollReveal();
@@ -70,48 +69,6 @@ function setupNavbar() {
       menu.classList.remove('is-active');
     });
   }
-}
-
-// dark mode toggle button - injected into the navbar dynamically
-// saves preference to localStorage
-function setupDarkMode() {
-  var navbar = document.querySelector('.navbar');
-  if (!navbar) return;
-
-  // create the toggle button
-  var btn = document.createElement('button');
-  btn.id = 'dark-toggle-btn';
-  btn.className = 'dark-toggle-btn';
-  btn.title = 'Toggle dark mode';
-  btn.setAttribute('aria-label', 'Toggle dark mode');
-
-  // check saved preference on load
-  if (localStorage.getItem('dark_mode') === 'on') {
-    document.body.classList.add('dark-mode');
-    btn.textContent = '☀️';
-  } else {
-    btn.textContent = '🌙';
-  }
-
-  // insert button before the burger menu
-  var burger = navbar.querySelector('.navbar-burger');
-  if (burger) {
-    navbar.insertBefore(btn, burger);
-  } else {
-    navbar.appendChild(btn);
-  }
-
-  // toggle dark mode on click
-  btn.addEventListener('click', function() {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-      localStorage.setItem('dark_mode', 'on');
-      btn.textContent = '☀️';
-    } else {
-      localStorage.setItem('dark_mode', 'off');
-      btn.textContent = '🌙';
-    }
-  });
 }
 
 // adds shadow to header when user scrolls down the page

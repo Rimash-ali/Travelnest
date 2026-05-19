@@ -35,19 +35,6 @@
   scroll-behavior: smooth;
 }
 
-/* simple dark mode colors */
-body.dark-mode {
-  --primary-color: #f8fafc;
-  --primary-hover: #cbd5e1;
-  --text-dark: #f8fafc;
-  --text-muted: #94a3b8;
-  --bg-light: #0f172a;
-  --card-bg: #1e293b;
-  --border-color: #475569;
-  --card-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
-  --card-shadow-hover: 5px 5px 15px rgba(0, 0, 0, 0.4);
-}
-
 /* simple css resets */
 * {
   box-sizing: border-box;
@@ -518,25 +505,6 @@ body.dark-mode .section-bg-alt {
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* ============================================
-   Dark Mode Toggle Button (added dynamically by JS)
-   ============================================ */
-.dark-toggle-btn {
-  background: none;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  padding: 5px 10px;
-  font-size: 1rem;
-  cursor: pointer;
-  color: var(--text-dark);
-  line-height: 1;
-  margin-right: 8px;
-}
-
-.dark-toggle-btn:hover {
-  background: var(--bg-light);
 }
 
 /* ============================================
