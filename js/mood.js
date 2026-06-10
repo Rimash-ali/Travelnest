@@ -76,8 +76,8 @@ function setupTravelTracker() {
 
   function refreshTracker() {
     // load saved tracker data
-    var visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
-    var planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
+    var visited = getStoredList('tracker_visited');
+    var planned = getStoredList('tracker_planned');
 
     // update stat counters
     visitedCountEl.textContent = visited.length;
@@ -101,14 +101,14 @@ function setupTravelTracker() {
       var item = document.createElement('div');
       item.className = 'tracker-item';
       item.innerHTML =
-        '<img src="' + imgUrl + '" alt="' + dest.name + '" class="tracker-thumb" onerror="this.src=\'../assets/placeholder.jpg\'">' +
+        '<img src="' + imgUrl + '" alt="' + dest.name + '" class="tracker-thumb" loading="lazy" decoding="async" onerror="this.src=\'../assets/placeholder.jpg\'">' +
         '<div class="tracker-info">' +
           '<div class="tracker-name">' + dest.name + '</div>' +
           '<div class="tracker-country">' + dest.country + ' | ' + dest.continent + '</div>' +
         '</div>' +
         '<div class="tracker-actions">' +
-          '<button class="btn-track btn-track-visited ' + (isVisited ? 'active' : '') + '" title="' + (isVisited ? 'Unmark' : 'Mark as Visited') + '">✓</button>' +
-          '<button class="btn-track btn-track-planned ' + (isPlanned ? 'active' : '') + '" title="' + (isPlanned ? 'Unmark' : 'Mark as Planned') + '">📅</button>' +
+          '<button class="btn-track btn-track-visited ' + (isVisited ? 'active' : '') + '" title="' + (isVisited ? 'Unmark' : 'Mark as Visited') + '" aria-label="' + (isVisited ? 'Remove ' : 'Mark ') + dest.name + (isVisited ? ' from visited destinations' : ' as visited') + '">✓</button>' +
+          '<button class="btn-track btn-track-planned ' + (isPlanned ? 'active' : '') + '" title="' + (isPlanned ? 'Unmark' : 'Mark as Planned') + '" aria-label="' + (isPlanned ? 'Remove ' : 'Mark ') + dest.name + (isPlanned ? ' from planned destinations' : ' as planned') + '">📅</button>' +
         '</div>';
 
       // attach button listeners using closure
@@ -126,8 +126,8 @@ function setupTravelTracker() {
   }
 
   function toggleVisited(id, name) {
-    var visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
-    var planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
+    var visited = getStoredList('tracker_visited');
+    var planned = getStoredList('tracker_planned');
 
     var idx = visited.indexOf(id);
     if (idx !== -1) {
@@ -147,8 +147,8 @@ function setupTravelTracker() {
   }
 
   function togglePlanned(id, name) {
-    var visited = JSON.parse(localStorage.getItem('tracker_visited') || '[]');
-    var planned = JSON.parse(localStorage.getItem('tracker_planned') || '[]');
+    var visited = getStoredList('tracker_visited');
+    var planned = getStoredList('tracker_planned');
 
     var idx = planned.indexOf(id);
     if (idx !== -1) {
@@ -165,5 +165,14 @@ function setupTravelTracker() {
     localStorage.setItem('tracker_visited', JSON.stringify(visited));
     localStorage.setItem('tracker_planned', JSON.stringify(planned));
     refreshTracker();
+  }
+
+  function getStoredList(key) {
+    try {
+      var value = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(value) ? value : [];
+    } catch (err) {
+      return [];
+    }
   }
 }

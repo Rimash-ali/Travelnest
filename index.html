@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -44,7 +44,7 @@
         </a>
 
         <!-- Hamburger Menu Trigger -->
-        <button
+        <button type="button"
           class="navbar-burger"
           aria-label="menu"
           aria-expanded="false"
@@ -65,7 +65,7 @@
           >
           <a href="./pages/mood.html" class="navbar-item">Travel Mood</a>
           <a href="./pages/feedback.html" class="navbar-item"
-            >Feedback & Support</a
+            >Feedback &amp; Support</a
           >
         </nav>
       </div>
@@ -101,11 +101,13 @@
           </div>
 
           <div class="hero-img-wrap">
-            <img
-              src="assets/hero.jpg"
-              alt="Beautiful lakeside landscape"
-              class="hero-img"
-           >
+          <img
+            src="assets/hero.jpg"
+            alt="Beautiful lakeside landscape"
+            class="hero-img"
+            fetchpriority="high"
+            decoding="async"
+          >
             <div class="hero-img-overlay">
               <div class="hero-img-overlay-text">
                 <h2>Ready to wander?</h2>
@@ -127,7 +129,7 @@
           <!-- Loaded by JS based on date -->
           <div id="dod-container">
             <div class="dod-card">
-              <img src="assets/placeholder.jpg" alt="Destination of the day" class="dod-img" onerror="this.src='assets/placeholder.jpg'" id="dod-img">
+              <img src="assets/placeholder.jpg" alt="Destination of the day" class="dod-img" loading="lazy" decoding="async" onerror="this.src='assets/placeholder.jpg'" id="dod-img">
               <div class="dod-content">
                 <span class="dod-badge"> Destination of the Day</span>
                 <h3 class="dod-title" id="dod-title">Destination, Country</h3>
@@ -158,7 +160,7 @@
             <!-- Card 1 -->
             <div class="feature-card reveal">
               <div class="feature-icon-box feat-blue" style="display:flex;align-items:center;justify-content:center;">
-                <img src="assets/icons/explorer.png" alt="Explorer Icon" style="width:24px;height:24px;object-fit:contain;">
+                <img src="assets/icons/explorer.png" alt="Explorer Icon" loading="lazy" decoding="async" style="width:24px;height:24px;object-fit:contain;">
               </div>
               <h3>Destination Explorer</h3>
               <p>Browse travel locations filtered by continent or search. View attractions, costs, local food and workouts.</p>
@@ -168,7 +170,7 @@
             <!-- Card 2 -->
             <div class="feature-card reveal">
               <div class="feature-icon-box feat-teal" style="display:flex;align-items:center;justify-content:center;">
-                <img src="assets/icons/budget.png" alt="Budget Icon" style="width:24px;height:24px;object-fit:contain;">
+                <img src="assets/icons/budget.png" alt="Budget Icon" loading="lazy" decoding="async" style="width:24px;height:24px;object-fit:contain;">
               </div>
               <h3>Trip Budget Planner</h3>
               <p>Enter your days and daily budget to estimate your total trip cost. Save plans and compare budget tiers.</p>
@@ -178,7 +180,7 @@
             <!-- Card 3 -->
             <div class="feature-card reveal">
               <div class="feature-icon-box feat-coral" style="display:flex;align-items:center;justify-content:center;">
-                <img src="assets/icons/generator.png" alt="Generator Icon" style="width:24px;height:24px;object-fit:contain;">
+                <img src="assets/icons/generator.png" alt="Generator Icon" loading="lazy" decoding="async" style="width:24px;height:24px;object-fit:contain;">
               </div>
               <h3>Random Trip Generator</h3>
               <p>Choose your travel vibe and budget level. Hit the button and get a random destination suggestion.</p>
@@ -242,6 +244,7 @@
                 type="email"
                 placeholder="Your Email Address"
                 class="footer-newsletter-input"
+                aria-label="Email address for travel inspiration newsletter"
                 required
                 id="newsletter-email"
              >

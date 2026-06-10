@@ -1,13 +1,18 @@
 // sw.js - service worker for TravelNest PWA
 // caches key files so the app can load even offline
 
-var CACHE_NAME = 'travelnest-cache-v1';
+var CACHE_NAME = 'travelnest-cache-v2';
 
 // list of files to cache when the SW first installs
 var filesToCache = [
   './index.html',
   './css/style.css',
   './css/responsive.css',
+  './css/explorer.css',
+  './css/budget.css',
+  './css/generator.css',
+  './css/mood.css',
+  './css/feedback.css',
   './js/data.js',
   './js/main.js',
   './js/home.js',

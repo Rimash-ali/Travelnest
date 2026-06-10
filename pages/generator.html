@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -45,7 +45,7 @@
         </a>
 
         <!-- Hamburger Menu Trigger -->
-        <button
+        <button type="button"
           class="navbar-burger"
           aria-label="menu"
           aria-expanded="false"
@@ -63,7 +63,7 @@
           <a href="./budget.html" class="navbar-item">Budget Planner</a>
           <a href="./generator.html" class="navbar-item">Trip Generator</a>
           <a href="./mood.html" class="navbar-item">Travel Mood</a>
-          <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+          <a href="./feedback.html" class="navbar-item">Feedback &amp; Support</a>
         </nav>
       </div>
     </header>
@@ -133,7 +133,7 @@
                 </select>
               </div>
 
-              <button class="btn btn-surprise" id="gen-surprise-btn">
+              <button type="button" class="btn btn-surprise" id="gen-surprise-btn">
                 Surprise Me Again
               </button>
 
@@ -153,6 +153,8 @@
                     alt="Generated destination"
                     class="result-img"
                     id="result-img"
+                    loading="lazy"
+                    decoding="async"
                     onerror="this.src = '../assets/placeholder.jpg'"
                  >
                   <span class="result-badge" id="result-type-badge"
@@ -181,12 +183,12 @@
                   ></p>
 
                   <div class="result-actions">
-                    <button
+                    <button type="button"
                       class="btn btn-primary"
                       id="add-wishlist-btn"
                       style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;"
                     >
-                      <img src="../assets/icons/heart-outline.png" alt="Heart" style="width:14px;height:14px;object-fit:contain;">
+                      <img src="../assets/icons/heart-outline.png" alt="Heart" loading="lazy" decoding="async" style="width:14px;height:14px;object-fit:contain;">
                       Add to Wishlist
                     </button>
                     <a
@@ -214,7 +216,7 @@
                 <!-- Rendered dynamically by JS -->
                 <div class="wishlist-empty">
                   <div class="empty-heart" style="display:flex;justify-content:center;margin-bottom:12px;">
-                    <img src="../assets/icons/heart-outline.png" alt="Empty Wishlist" style="width:48px;height:48px;object-fit:contain;">
+                    <img src="../assets/icons/heart-outline.png" alt="Empty Wishlist" loading="lazy" decoding="async" style="width:48px;height:48px;object-fit:contain;">
                   </div>
                   <p>
                     Your wishlist is empty. Generate a trip and click "Add to
@@ -279,6 +281,7 @@
                 type="email"
                 placeholder="Your Email Address"
                 class="footer-newsletter-input"
+                aria-label="Email address for travel inspiration newsletter"
                 required
                 id="newsletter-email"
              >

@@ -58,8 +58,10 @@ function setupNavbar() {
     // toggle class to show/hide nav
     if (menu.classList.contains('is-active')) {
       menu.classList.remove('is-active');
+      burger.setAttribute('aria-expanded', 'false');
     } else {
       menu.classList.add('is-active');
+      burger.setAttribute('aria-expanded', 'true');
     }
   });
 
@@ -68,6 +70,7 @@ function setupNavbar() {
   for (var i = 0; i < links.length; i++) {
     links[i].addEventListener('click', function() {
       menu.classList.remove('is-active');
+      burger.setAttribute('aria-expanded', 'false');
     });
   }
 }
@@ -160,7 +163,11 @@ function setupNewsletterForm() {
     var stored = localStorage.getItem('newsletter_emails');
     var emails = [];
     if (stored) {
-      emails = JSON.parse(stored);
+      try {
+        emails = JSON.parse(stored);
+      } catch (err) {
+        emails = [];
+      }
     }
 
     // dont save duplicates

@@ -200,7 +200,7 @@
 .wishlist-delete {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: #475569;
   cursor: pointer;
   font-size: 0.9rem;
   padding: 6px;
@@ -212,8 +212,13 @@
 }
 
 .wishlist-delete:hover {
-  color: #ef4444;
+  color: #b91c1c;
   background: rgba(239, 68, 68, 0.08);
+}
+
+.wishlist-delete:focus-visible {
+  outline: 3px solid rgba(2, 132, 199, 0.45);
+  outline-offset: 3px;
 }
 
 .wishlist-empty {

@@ -12,6 +12,7 @@ function setupExplorer() {
   var grid = document.getElementById('explorer-grid');
   var modal = document.getElementById('details-modal');
   var closeBtn = document.getElementById('modal-close-btn');
+  var lastFocusedElement = null;
 
   // current filter state variables
   var selectedContinent = 'all';
@@ -22,10 +23,18 @@ function setupExplorer() {
   var allCards = grid ? grid.querySelectorAll('.dest-card') : [];
   for (var i = 0; i < allCards.length; i++) {
     (function(card) {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
       card.addEventListener('click', function() {
         var destId = card.getAttribute('data-id');
         var dest = findById(destId);
         if (dest) openModal(dest);
+      });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
       });
     })(allCards[i]);
   }
@@ -203,12 +212,18 @@ function setupExplorer() {
       document.getElementById('modal-workout-desc').textContent = dest.workoutData.description + ' (Duration: ' + dest.workoutData.duration + ')';
     }
 
+    lastFocusedElement = document.activeElement;
     modal.classList.add('is-active');
     document.body.style.overflow = 'hidden';
+    if (closeBtn) closeBtn.focus();
   }
 
   function closeModal() {
+    if (!modal || !modal.classList.contains('is-active')) return;
     modal.classList.remove('is-active');
     document.body.style.overflow = '';
+    if (lastFocusedElement && lastFocusedElement.focus) {
+      lastFocusedElement.focus();
+    }
   }
 }

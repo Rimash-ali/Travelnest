@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -45,7 +45,7 @@
         </a>
 
         <!-- Hamburger Menu Trigger -->
-        <button
+        <button type="button"
           class="navbar-burger"
           aria-label="menu"
           aria-expanded="false"
@@ -63,7 +63,7 @@
           <a href="./budget.html" class="navbar-item">Budget Planner</a>
           <a href="./generator.html" class="navbar-item">Trip Generator</a>
           <a href="./mood.html" class="navbar-item">Travel Mood</a>
-          <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+          <a href="./feedback.html" class="navbar-item">Feedback &amp; Support</a>
         </nav>
       </div>
     </header>
@@ -164,7 +164,7 @@
                   class="btn btn-primary"
                   style="width: 100%; margin-top: 8px"
                 >
-                  Calculate & Analyze Budget
+                  Calculate &amp; Analyze Budget
                 </button>
               </form>
 
@@ -191,7 +191,7 @@
                   </div>
                 </div>
 
-                <button
+                <button type="button"
                   class="btn btn-accent btn-sm"
                   id="save-budget-btn"
                   style="
@@ -219,7 +219,7 @@
                 <!-- Populated via JS -->
                 <div class="no-plans">
                   <div class="plans-icon" style="display:flex;justify-content:center;margin-bottom:12px;">
-                    <img src="../assets/icons/empty-budget.png" alt="No Plans Icon" style="width:48px;height:48px;object-fit:contain;">
+                    <img src="../assets/icons/empty-budget.png" alt="No Plans Icon" loading="lazy" decoding="async" style="width:48px;height:48px;object-fit:contain;">
                   </div>
                   <p>
                     No plans saved yet. Fill out the calculator to save your
@@ -284,6 +284,7 @@
                 type="email"
                 placeholder="Your Email Address"
                 class="footer-newsletter-input"
+                aria-label="Email address for travel inspiration newsletter"
                 required
                 id="newsletter-email"
              >

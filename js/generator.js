@@ -129,7 +129,13 @@ function setupGenerator() {
   function updateWishlistBtn(id) {
     var stored = localStorage.getItem('wishlist_destinations');
     var wishlist = [];
-    if (stored) wishlist = JSON.parse(stored);
+    if (stored) {
+      try {
+        wishlist = JSON.parse(stored);
+      } catch (err) {
+        wishlist = [];
+      }
+    }
 
     var alreadySaved = false;
     for (var i = 0; i < wishlist.length; i++) {
@@ -157,7 +163,13 @@ function setupGenerator() {
 
       var stored = localStorage.getItem('wishlist_destinations');
       var wishlist = [];
-      if (stored) wishlist = JSON.parse(stored);
+      if (stored) {
+        try {
+          wishlist = JSON.parse(stored);
+        } catch (err) {
+          wishlist = [];
+        }
+      }
 
       // check if already in list
       var foundIdx = -1;
@@ -198,7 +210,13 @@ function setupGenerator() {
 
     var stored = localStorage.getItem('wishlist_destinations');
     var wishlist = [];
-    if (stored) wishlist = JSON.parse(stored);
+    if (stored) {
+      try {
+        wishlist = JSON.parse(stored);
+      } catch (err) {
+        wishlist = [];
+      }
+    }
 
     wishlistContainer.innerHTML = '';
 
@@ -217,13 +235,13 @@ function setupGenerator() {
       el.className = 'wishlist-item';
       el.innerHTML =
         '<div class="wishlist-details" style="cursor:pointer;">' +
-          '<img src="' + imgUrl + '" alt="' + item.name + '" class="wishlist-thumb" onerror="this.src=\'../assets/placeholder.jpg\'">' +
+          '<img src="' + imgUrl + '" alt="' + item.name + '" class="wishlist-thumb" loading="lazy" decoding="async" onerror="this.src=\'../assets/placeholder.jpg\'">' +
           '<div class="wishlist-info">' +
             '<h4>' + item.name + '</h4>' +
             '<p>' + item.country + ' | ' + item.travelType.toUpperCase() + '</p>' +
           '</div>' +
         '</div>' +
-        '<button class="wishlist-delete" data-id="' + item.id + '" title="Remove">✕</button>';
+        '<button class="wishlist-delete" data-id="' + item.id + '" title="Remove" aria-label="Remove ' + item.name + ' from wishlist">✕</button>';
 
       // clicking the item card links to explorer
       (function(itemId) {
@@ -248,7 +266,13 @@ function setupGenerator() {
   function removeFromWishlist(id, name) {
     var stored = localStorage.getItem('wishlist_destinations');
     var wishlist = [];
-    if (stored) wishlist = JSON.parse(stored);
+    if (stored) {
+      try {
+        wishlist = JSON.parse(stored);
+      } catch (err) {
+        wishlist = [];
+      }
+    }
 
     var updated = [];
     for (var i = 0; i < wishlist.length; i++) {

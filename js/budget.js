@@ -109,7 +109,11 @@ function setupBudgetPlanner() {
       var stored = localStorage.getItem('saved_budgets');
       var plans = [];
       if (stored) {
-        plans = JSON.parse(stored);
+        try {
+          plans = JSON.parse(stored);
+        } catch (err) {
+          plans = [];
+        }
       }
 
       plans.unshift(lastCalc); // add at the beginning
@@ -156,7 +160,11 @@ function setupBudgetPlanner() {
     var stored = localStorage.getItem('saved_budgets');
     var plans = [];
     if (stored) {
-      plans = JSON.parse(stored);
+      try {
+        plans = JSON.parse(stored);
+      } catch (err) {
+        plans = [];
+      }
     }
 
     savedList.innerHTML = '';
@@ -178,7 +186,7 @@ function setupBudgetPlanner() {
         '</div>' +
         '<div style="display:flex; align-items:center; gap:12px;">' +
           '<div class="saved-plan-cost">$' + plan.totalCost.toLocaleString() + '</div>' +
-          '<button class="delete-btn" data-id="' + plan.id + '" title="Delete this plan">✕</button>' +
+          '<button class="delete-btn" data-id="' + plan.id + '" title="Delete this plan" aria-label="Delete budget plan for ' + plan.destName + '">✕</button>' +
         '</div>';
 
       // add delete functionality using a closure to capture correct plan
@@ -198,7 +206,11 @@ function setupBudgetPlanner() {
     var stored = localStorage.getItem('saved_budgets');
     var plans = [];
     if (stored) {
-      plans = JSON.parse(stored);
+      try {
+        plans = JSON.parse(stored);
+      } catch (err) {
+        plans = [];
+      }
     }
 
     // rebuild array without the deleted one

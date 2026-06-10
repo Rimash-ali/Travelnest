@@ -11,29 +11,45 @@ function setupFaqAccordion() {
   var headers = document.querySelectorAll('.faq-header');
 
   for (var i = 0; i < headers.length; i++) {
+    headers[i].setAttribute('role', 'button');
+    headers[i].setAttribute('tabindex', '0');
+    headers[i].setAttribute('aria-expanded', 'false');
     headers[i].addEventListener('click', function() {
-      var item = this.parentElement;
-      var body = item.querySelector('.faq-body');
-      var isOpen = item.classList.contains('is-open');
-
-      // close all other faq items first
-      var allItems = document.querySelectorAll('.faq-item');
-      for (var j = 0; j < allItems.length; j++) {
-        if (allItems[j] !== item) {
-          allItems[j].classList.remove('is-open');
-          allItems[j].querySelector('.faq-body').style.maxHeight = '0px';
-        }
-      }
-
-      // toggle the clicked item
-      if (isOpen) {
-        item.classList.remove('is-open');
-        body.style.maxHeight = '0px';
-      } else {
-        item.classList.add('is-open');
-        body.style.maxHeight = body.scrollHeight + 'px';
+      toggleFaq(this);
+    });
+    headers[i].addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleFaq(this);
       }
     });
+  }
+
+  function toggleFaq(header) {
+    var item = header.parentElement;
+    var body = item.querySelector('.faq-body');
+    var isOpen = item.classList.contains('is-open');
+
+    // close all other faq items first
+    var allItems = document.querySelectorAll('.faq-item');
+    for (var j = 0; j < allItems.length; j++) {
+      if (allItems[j] !== item) {
+        allItems[j].classList.remove('is-open');
+        allItems[j].querySelector('.faq-body').style.maxHeight = '0px';
+        allItems[j].querySelector('.faq-header').setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    // toggle the clicked item
+    if (isOpen) {
+      item.classList.remove('is-open');
+      body.style.maxHeight = '0px';
+      header.setAttribute('aria-expanded', 'false');
+    } else {
+      item.classList.add('is-open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      header.setAttribute('aria-expanded', 'true');
+    }
   }
 }
 
@@ -96,7 +112,11 @@ function setupFeedbackForm() {
     var stored = localStorage.getItem('feedback_submissions');
     var all = [];
     if (stored) {
-      all = JSON.parse(stored);
+      try {
+        all = JSON.parse(stored);
+      } catch (err) {
+        all = [];
+      }
     }
 
     // add new one and save back

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -45,7 +45,7 @@
         </a>
 
         <!-- Hamburger Menu Trigger -->
-        <button
+        <button type="button"
           class="navbar-burger"
           aria-label="menu"
           aria-expanded="false"
@@ -63,7 +63,7 @@
           <a href="./budget.html" class="navbar-item">Budget Planner</a>
           <a href="./generator.html" class="navbar-item">Trip Generator</a>
           <a href="./mood.html" class="navbar-item">Travel Mood</a>
-          <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+          <a href="./feedback.html" class="navbar-item">Feedback &amp; Support</a>
         </nav>
       </div>
     </header>
@@ -88,12 +88,13 @@
                   type="text"
                   id="search-name"
                   class="form-input"
+                  aria-label="Search destinations"
                   placeholder="Search destinations by name or country..."
                >
               </div>
 
               <div>
-                <select id="select-type" class="form-select">
+                <select id="select-type" class="form-select" aria-label="Filter by travel experience">
                   <option value="all">All Experiences</option>
                   <option value="adventure">Adventure</option>
                   <option value="relaxation">Relaxation</option>
@@ -105,19 +106,19 @@
 
             <!-- Continent Pill Filters -->
             <div class="filter-pills" id="continent-pills">
-              <button class="pill is-active" data-continent="all">
+              <button type="button" class="pill is-active" data-continent="all">
                 All Continents
               </button>
-              <button class="pill" data-continent="Asia">Asia</button>
-              <button class="pill" data-continent="Europe">Europe</button>
-              <button class="pill" data-continent="Africa">Africa</button>
-              <button class="pill" data-continent="North America">
+              <button type="button" class="pill" data-continent="Asia">Asia</button>
+              <button type="button" class="pill" data-continent="Europe">Europe</button>
+              <button type="button" class="pill" data-continent="Africa">Africa</button>
+              <button type="button" class="pill" data-continent="North America">
                 North America
               </button>
-              <button class="pill" data-continent="South America">
+              <button type="button" class="pill" data-continent="South America">
                 South America
               </button>
-              <button class="pill" data-continent="Oceania">Oceania</button>
+              <button type="button" class="pill" data-continent="Oceania">Oceania</button>
             </div>
           </div>
 
@@ -125,7 +126,7 @@
           <div class="explorer-grid" id="explorer-grid">
 <div class="dest-card" data-continent="Asia" data-type="cultural" data-name="kyoto" data-country="japan" data-id="kyoto-japan">
   <div class="dest-img-box">
-    <img src="../assets/destinations/kyoto.jpg" alt="Kyoto" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/kyoto.jpg" alt="Kyoto" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">cultural</span>
   </div>
   <div class="dest-info">
@@ -133,14 +134,14 @@
       <span>🌍 Asia</span>
       <span>💰 MEDIUM</span>
     </div>
-    <h2 class="dest-card-title">Kyoto, Japan</h3>
+    <h2 class="dest-card-title">Kyoto, Japan</h2>
     <p class="dest-card-desc">Kyoto, once the capital of Japan, is a city on the island of Honshu. It's famous for its thousands of classical Buddhist temples, as well as gardens, imperial palaces, Shinto shrines and traditional wooden houses.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Asia" data-type="relaxation" data-name="bali" data-country="indonesia" data-id="bali-indonesia">
   <div class="dest-img-box">
-    <img src="../assets/destinations/bali.jpg" alt="Bali" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/bali.jpg" alt="Bali" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">relaxation</span>
   </div>
   <div class="dest-info">
@@ -148,14 +149,14 @@
       <span>🌍 Asia</span>
       <span>💰 LOW</span>
     </div>
-    <h2 class="dest-card-title">Bali, Indonesia</h3>
+    <h2 class="dest-card-title">Bali, Indonesia</h2>
     <p class="dest-card-desc">Bali is a province of Indonesia and the westernmost of the Lesser Sunda Islands. East of Java and west of Lombok, the province includes the island of Bali and a few smaller neighbouring islands.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Oceania" data-type="adventure" data-name="queenstown" data-country="new zealand" data-id="queenstown-new-zealand">
   <div class="dest-img-box">
-    <img src="../assets/destinations/queenstown.jpg" alt="Queenstown" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/queenstown.jpg" alt="Queenstown" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">adventure</span>
   </div>
   <div class="dest-info">
@@ -163,14 +164,14 @@
       <span>🌍 Oceania</span>
       <span>💰 HIGH</span>
     </div>
-    <h2 class="dest-card-title">Queenstown, New Zealand</h3>
+    <h2 class="dest-card-title">Queenstown, New Zealand</h2>
     <p class="dest-card-desc">Queenstown, New Zealand, sits on the shores of the South Island’s Lake Wakatipu, set against the dramatic Southern Alps. Renowned for adventure sports, it’s also a base for exploring the region’s vineyards and historic mining towns.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Europe" data-type="cultural" data-name="rome" data-country="italy" data-id="rome-italy">
   <div class="dest-img-box">
-    <img src="../assets/destinations/rome.jpg" alt="Rome" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/rome.jpg" alt="Rome" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">cultural</span>
   </div>
   <div class="dest-info">
@@ -178,14 +179,14 @@
       <span>🌍 Europe</span>
       <span>💰 MEDIUM</span>
     </div>
-    <h2 class="dest-card-title">Rome, Italy</h3>
+    <h2 class="dest-card-title">Rome, Italy</h2>
     <p class="dest-card-desc">Rome is the capital city of Italy. It is also the capital of the Lazio region, the center of the Metropolitan City of Rome, and a special comune named Comune di Roma Capitale.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Europe" data-type="nature" data-name="reykjavik" data-country="iceland" data-id="reykjavik-iceland">
   <div class="dest-img-box">
-    <img src="../assets/destinations/reykjavik.jpg" alt="Reykjavik" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/reykjavik.jpg" alt="Reykjavik" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">nature</span>
   </div>
   <div class="dest-info">
@@ -193,14 +194,14 @@
       <span>🌍 Europe</span>
       <span>💰 HIGH</span>
     </div>
-    <h2 class="dest-card-title">Reykjavik, Iceland</h3>
+    <h2 class="dest-card-title">Reykjavik, Iceland</h2>
     <p class="dest-card-desc">Reykjavik, on the coast of Iceland, is the country's capital and largest city. It home to the National and Saga museums, tracing Iceland’s Viking history, and the striking concrete Hallgrimskirkja church.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Africa" data-type="adventure" data-name="cape town" data-country="south africa" data-id="cape-town-south-africa">
   <div class="dest-img-box">
-    <img src="../assets/destinations/capetown.jpg" alt="Cape Town" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/capetown.jpg" alt="Cape Town" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">adventure</span>
   </div>
   <div class="dest-info">
@@ -208,14 +209,14 @@
       <span>🌍 Africa</span>
       <span>💰 MEDIUM</span>
     </div>
-    <h2 class="dest-card-title">Cape Town, South Africa</h3>
+    <h2 class="dest-card-title">Cape Town, South Africa</h2>
     <p class="dest-card-desc">Cape Town is a port city on South Africa’s southwest coast, on a peninsula beneath the imposing Table Mountain. Slowly rotating cable cars climb to the mountain’s flat top, from which there are sweeping views of the city.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Africa" data-type="cultural" data-name="cairo" data-country="egypt" data-id="cairo-egypt">
   <div class="dest-img-box">
-    <img src="../assets/destinations/cairo.jpg" alt="Cairo" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/cairo.jpg" alt="Cairo" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">cultural</span>
   </div>
   <div class="dest-info">
@@ -223,14 +224,14 @@
       <span>🌍 Africa</span>
       <span>💰 LOW</span>
     </div>
-    <h2 class="dest-card-title">Cairo, Egypt</h3>
+    <h2 class="dest-card-title">Cairo, Egypt</h2>
     <p class="dest-card-desc">Cairo, Egypt’s dusty, bustling capital, is set on the Nile River. At its heart is Tahrir Square and the vast Egyptian Museum, a trove of antiquities including royal mummies and gilded King Tutankhamun artifacts.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="North America" data-type="cultural" data-name="new york city" data-country="united states" data-id="new-york-city-usa">
   <div class="dest-img-box">
-    <img src="../assets/destinations/nyc.jpg" alt="New York City" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/nyc.jpg" alt="New York City" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">cultural</span>
   </div>
   <div class="dest-info">
@@ -238,14 +239,14 @@
       <span>🌍 North America</span>
       <span>💰 HIGH</span>
     </div>
-    <h2 class="dest-card-title">New York City, United States</h3>
+    <h2 class="dest-card-title">New York City, United States</h2>
     <p class="dest-card-desc">New York City comprises 5 boroughs sitting where the Hudson River meets the Atlantic Ocean. At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="North America" data-type="nature" data-name="banff" data-country="canada" data-id="banff-canada">
   <div class="dest-img-box">
-    <img src="../assets/destinations/banff.jpg" alt="Banff" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/banff.jpg" alt="Banff" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">nature</span>
   </div>
   <div class="dest-info">
@@ -253,14 +254,14 @@
       <span>🌍 North America</span>
       <span>💰 MEDIUM</span>
     </div>
-    <h2 class="dest-card-title">Banff, Canada</h3>
+    <h2 class="dest-card-title">Banff, Canada</h2>
     <p class="dest-card-desc">Banff National Park is Canada's oldest national park, established in 1885. Located in the Rocky Mountains, west of Calgary in the province of Alberta, it encompasses mountainous terrain, with glaciers and ice fields.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="South America" data-type="adventure" data-name="rio de janeiro" data-country="brazil" data-id="rio-de-janeiro-brazil">
   <div class="dest-img-box">
-    <img src="../assets/destinations/rio.jpg" alt="Rio de Janeiro" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/rio.jpg" alt="Rio de Janeiro" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">adventure</span>
   </div>
   <div class="dest-info">
@@ -268,14 +269,14 @@
       <span>🌍 South America</span>
       <span>💰 MEDIUM</span>
     </div>
-    <h2 class="dest-card-title">Rio de Janeiro, Brazil</h3>
+    <h2 class="dest-card-title">Rio de Janeiro, Brazil</h2>
     <p class="dest-card-desc">Rio de Janeiro is a huge seaside city in Brazil, famed for its Copacabana and Ipanema beaches, 38m Christ the Redeemer statue atop Mount Corcovado and for Sugarloaf Mountain, a granite peak.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="South America" data-type="cultural" data-name="machu picchu" data-country="peru" data-id="machu-picchu-peru">
   <div class="dest-img-box">
-    <img src="../assets/destinations/machupicchu.jpg" alt="Machu Picchu" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/machupicchu.jpg" alt="Machu Picchu" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">cultural</span>
   </div>
   <div class="dest-info">
@@ -283,14 +284,14 @@
       <span>🌍 South America</span>
       <span>💰 MEDIUM</span>
     </div>
-    <h2 class="dest-card-title">Machu Picchu, Peru</h3>
+    <h2 class="dest-card-title">Machu Picchu, Peru</h2>
     <p class="dest-card-desc">Machu Picchu is an Incan citadel set high in the Andes Mountains in Peru, above the Urubamba River valley. Built in the 15th century and later abandoned, it’s renowned for its sophisticated dry-stone walls.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Oceania" data-type="relaxation" data-name="sydney" data-country="australia" data-id="sydney-australia">
   <div class="dest-img-box">
-    <img src="../assets/destinations/sydney.jpg" alt="Sydney" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/sydney.jpg" alt="Sydney" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">relaxation</span>
   </div>
   <div class="dest-info">
@@ -298,14 +299,14 @@
       <span>🌍 Oceania</span>
       <span>💰 HIGH</span>
     </div>
-    <h2 class="dest-card-title">Sydney, Australia</h3>
+    <h2 class="dest-card-title">Sydney, Australia</h2>
     <p class="dest-card-desc">Sydney, capital of New South Wales and one of Australia's largest cities, is best known for its Sydney Opera House, with a distinctive sail-like design. Darling Harbour and the smaller Circular Quay port are hubs of waterside life.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="Africa" data-type="cultural" data-name="marrakech" data-country="morocco" data-id="marrakech-morocco">
   <div class="dest-img-box">
-    <img src="../assets/destinations/marrakech.jpg" alt="Marrakech" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/marrakech.jpg" alt="Marrakech" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">cultural</span>
   </div>
   <div class="dest-info">
@@ -313,14 +314,14 @@
       <span>🌍 Africa</span>
       <span>💰 LOW</span>
     </div>
-    <h2 class="dest-card-title">Marrakech, Morocco</h3>
+    <h2 class="dest-card-title">Marrakech, Morocco</h2>
     <p class="dest-card-desc">Marrakech, a former imperial city in western Morocco, is a major economic center and home to mosques, palaces and gardens. The medina is a densely packed, walled medieval city dating to the Berber Empire.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
 </div>
 <div class="dest-card" data-continent="North America" data-type="nature" data-name="costa rica (la fortuna)" data-country="costa rica" data-id="costa-rica">
   <div class="dest-img-box">
-    <img src="../assets/destinations/costarica.jpg" alt="Costa Rica (La Fortuna)" class="dest-card-img" onerror="this.src='../assets/placeholder.jpg'">
+    <img src="../assets/destinations/costarica.jpg" alt="Costa Rica (La Fortuna)" class="dest-card-img" loading="lazy" decoding="async" onerror="this.src='../assets/placeholder.jpg'">
     <span class="dest-type-badge">nature</span>
   </div>
   <div class="dest-info">
@@ -328,7 +329,7 @@
       <span>🌍 North America</span>
       <span>💰 LOW</span>
     </div>
-    <h2 class="dest-card-title">Costa Rica (La Fortuna), Costa Rica</h3>
+    <h2 class="dest-card-title">Costa Rica (La Fortuna), Costa Rica</h2>
     <p class="dest-card-desc">Costa Rica is a rugged, rainforested Central American country with coastlines on the Caribbean and Pacific. La Fortuna, under the Arenal Volcano, is famous for geothermal hot springs, mist-shrouded canopy walks, and active wildlife.</p>
     <div class="dest-card-footer"><span>View Details</span><span>→</span></div>
   </div>
@@ -339,13 +340,14 @@
     </main>
 
     <!-- Details Modal -->
-    <div class="modal" id="details-modal">
+    <div class="modal" id="details-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-content">
         <div style="position: relative">
           <img id="modal-img" src="../assets/placeholder.jpg" alt="Selected destination" class="modal-img">
-          <button
+          <button type="button"
             class="modal-close"
             id="modal-close-btn"
+            aria-label="Close destination details"
             style="position:absolute; top:12px; right:12px; background:#fff; width:32px; height:32px; border-radius:50%; border:1px solid #ccc; cursor:pointer; font-size:1.1rem;"
           >
             &times;
@@ -382,7 +384,7 @@
                 <tr>
                   <th>Tier</th>
                   <th>Accommodation</th>
-                  <th>Food & Drinks</th>
+                  <th>Food &amp; Drinks</th>
                   <th>Local Transit</th>
                   <th>Daily Total</th>
                 </tr>
@@ -482,6 +484,7 @@
                 type="email"
                 placeholder="Your Email Address"
                 class="footer-newsletter-input"
+                aria-label="Email address for travel inspiration newsletter"
                 required
                 id="newsletter-email"
              >

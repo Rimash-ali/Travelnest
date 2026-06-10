@@ -79,12 +79,12 @@
 /* Form field validation errors visual markers */
 .form-group.has-error .form-input,
 .form-group.has-error .form-textarea {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15);
 }
 
 .validation-error-msg {
-  color: #ef4444;
+  color: #b91c1c;
   font-size: 0.78rem;
   margin-top: 4px;
   display: none;

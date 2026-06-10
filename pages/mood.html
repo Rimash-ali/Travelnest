@@ -36,7 +36,7 @@
       </a>
       
       <!-- Hamburger Menu Trigger -->
-      <button class="navbar-burger" aria-label="menu" aria-expanded="false" id="burger-btn">
+      <button type="button" class="navbar-burger" aria-label="menu" aria-expanded="false" id="burger-btn">
         <span></span>
         <span></span>
         <span></span>
@@ -49,7 +49,7 @@
         <a href="./budget.html" class="navbar-item">Budget Planner</a>
         <a href="./generator.html" class="navbar-item">Trip Generator</a>
         <a href="./mood.html" class="navbar-item">Travel Mood</a>
-        <a href="./feedback.html" class="navbar-item">Feedback & Support</a>
+        <a href="./feedback.html" class="navbar-item">Feedback &amp; Support</a>
       </nav>
     </div>
   </header>
@@ -75,7 +75,7 @@
               <!-- Sound 1: Beach -->
               <div class="sound-card" id="sound-card-beach">
                 <div class="sound-icon-box" style="display:flex;align-items:center;justify-content:center;">
-                  <img src="../assets/icons/sound-beach.png" alt="Beach Icon" style="width:28px;height:28px;object-fit:contain;">
+                  <img src="../assets/icons/sound-beach.png" alt="Beach Icon" loading="lazy" decoding="async" style="width:28px;height:28px;object-fit:contain;">
                 </div>
                 <div>
                   <h3 style="font-size: 1.15rem;">Ocean Beach</h3>
@@ -90,7 +90,7 @@
                   <div class="eq-bar"></div>
                 </div>
                 
-                <button class="btn btn-outline btn-sm play-toggle-btn" data-sound="beach" style="width: 100%; margin-top: 10px;">
+                <button type="button" class="btn btn-outline btn-sm play-toggle-btn" data-sound="beach" style="width: 100%; margin-top: 10px;">
                   Play Sound
                 </button>
                 <audio id="audio-beach" loop preload="none"></audio>
@@ -99,11 +99,11 @@
               <!-- Sound 2: Forest -->
               <div class="sound-card" id="sound-card-forest">
                 <div class="sound-icon-box" style="display:flex;align-items:center;justify-content:center;">
-                  <img src="../assets/icons/sound-forest.png" alt="Forest Icon" style="width:28px;height:28px;object-fit:contain;">
+                  <img src="../assets/icons/sound-forest.png" alt="Forest Icon" loading="lazy" decoding="async" style="width:28px;height:28px;object-fit:contain;">
                 </div>
                 <div>
                   <h3 style="font-size: 1.15rem;">Alpine Forest</h3>
-                  <p style="font-size: 0.8rem; color: var(--text-muted);">Calm breeze & water stream</p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Calm breeze &amp; water stream</p>
                 </div>
                 
                 <div class="equalizer">
@@ -114,7 +114,7 @@
                   <div class="eq-bar"></div>
                 </div>
                 
-                <button class="btn btn-outline btn-sm play-toggle-btn" data-sound="forest" style="width: 100%; margin-top: 10px;">
+                <button type="button" class="btn btn-outline btn-sm play-toggle-btn" data-sound="forest" style="width: 100%; margin-top: 10px;">
                   Play Sound
                 </button>
                 <audio id="audio-forest" loop src="https://www.soundjay.com/nature/sounds/rain-07.mp3" preload="none"></audio>
@@ -123,11 +123,11 @@
               <!-- Sound 3: City -->
               <div class="sound-card" id="sound-card-city">
                 <div class="sound-icon-box" style="display:flex;align-items:center;justify-content:center;">
-                  <img src="../assets/icons/sound-city.png" alt="City Icon" style="width:28px;height:28px;object-fit:contain;">
+                  <img src="../assets/icons/sound-city.png" alt="City Icon" loading="lazy" decoding="async" style="width:28px;height:28px;object-fit:contain;">
                 </div>
                 <div>
                   <h3 style="font-size: 1.15rem;">Bustling City</h3>
-                  <p style="font-size: 0.8rem; color: var(--text-muted);">Urban sounds & road rumble</p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Urban sounds &amp; road rumble</p>
                 </div>
                 
                 <div class="equalizer">
@@ -138,7 +138,7 @@
                   <div class="eq-bar"></div>
                 </div>
                 
-                <button class="btn btn-outline btn-sm play-toggle-btn" data-sound="city" style="width: 100%; margin-top: 10px;">
+                <button type="button" class="btn btn-outline btn-sm play-toggle-btn" data-sound="city" style="width: 100%; margin-top: 10px;">
                   Play Sound
                 </button>
                 <audio id="audio-city" loop src="https://www.soundjay.com/misc/sounds/street-traffic-1.mp3" preload="none"></audio>
@@ -207,7 +207,7 @@
           <h3 class="footer-links-title">Travel Inspiration</h3>
           <p class="footer-desc" style="margin-bottom: 8px;">Subscribe to receive handpicked travel inspiration and daily spot highlights.</p>
           <form class="footer-newsletter-form" id="newsletter-form">
-            <input type="email" placeholder="Your Email Address" class="footer-newsletter-input" required id="newsletter-email">
+            <input type="email" placeholder="Your Email Address" class="footer-newsletter-input" aria-label="Email address for travel inspiration newsletter" required id="newsletter-email">
             <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
           </form>
         </div>
