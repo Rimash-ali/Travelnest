@@ -1,248 +1,34 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
     <title>TravelNest - Explore Destinations, Plan Budgets & Track Trips</title>
     <meta
       name="description"
       content="Discover stunning travel destinations, calculate budget structures, get random trip recommendations, and organize your dream itinerary in one visual hub."
-    />
+   >
     <meta
       name="keywords"
       content="travel, trip planner, travel budget, travel goals, destination search, travel mood"
-    />
-    <meta name="author" content="COMP40053 Student" />
+   >
+    <meta name="author" content="COMP40053 Student">
 
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="./assets/icons/logo.png" />
+    <link rel="icon" type="image/png" href="./assets/icons/logo.png">
 
     <!-- Custom Stylesheets -->
-    <link rel="stylesheet" href="./css/style.css" />
-    <link rel="stylesheet" href="./css/responsive.css" />
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/responsive.css">
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#0284c7" />
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0284c7">
 
-    <!-- home page specific styles -->
-    <style>
-      /* Hero section layout */
-      .hero {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-        align-items: center;
-        padding: 50px 0;
-      }
-
-      .hero-tag {
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--accent-blue);
-        margin-bottom: 6px;
-        display: block;
-      }
-
-      .hero-title {
-        font-size: 2.8rem;
-        line-height: 1.2;
-        font-weight: bold;
-        margin-bottom: 14px;
-      }
-
-      /* quote box styling */
-      .quote-slider-container {
-        background: #ffffff;
-        border-left: 4px solid var(--accent-blue);
-        padding: 14px 20px;
-        margin-top: 14px;
-        min-height: 80px;
-      }
-
-      .quote-text {
-        font-size: 1rem;
-        font-style: italic;
-        color: var(--text-dark);
-        margin-bottom: 5px;
-      }
-
-      .quote-author {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: var(--text-muted);
-      }
-
-      .hero-img-wrap {
-        position: relative;
-      }
-
-      .hero-img {
-        width: 100%;
-        border-radius: var(--border-radius-md);
-        object-fit: cover;
-        height: 420px;
-        box-shadow: var(--card-shadow);
-      }
-
-      .hero-img-overlay {
-        position: absolute;
-        bottom: -16px;
-        left: -16px;
-        background: var(--card-bg);
-        border-radius: var(--border-radius-sm);
-        padding: 12px 18px;
-        box-shadow: var(--card-shadow);
-        border: 1px solid var(--border-color);
-      }
-
-      .hero-img-overlay-text h4 {
-        font-size: 0.9rem;
-        color: var(--primary-color);
-      }
-
-      .hero-img-overlay-text p {
-        font-size: 0.78rem;
-        color: var(--text-muted);
-      }
-
-      /* destination of the day card */
-      .dod-card {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        background: var(--card-bg);
-        border-radius: var(--border-radius-md);
-        overflow: hidden;
-        box-shadow: var(--card-shadow);
-        border: 1px solid var(--border-color);
-        margin-top: 20px;
-      }
-
-      .dod-card:hover {
-        box-shadow: var(--card-shadow-hover);
-      }
-
-      .dod-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        min-height: 320px;
-      }
-
-      .dod-content {
-        padding: 32px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 14px;
-      }
-
-      .dod-badge {
-        display: inline-block;
-        background: #fff3e0;
-        color: var(--accent-coral);
-        padding: 4px 12px;
-        border-radius: var(--border-radius-sm);
-        font-weight: 700;
-        font-size: 0.78rem;
-        align-self: flex-start;
-      }
-
-      .dod-title {
-        font-size: 1.9rem;
-        font-weight: bold;
-      }
-
-      .dod-meta {
-        display: flex;
-        gap: 14px;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        flex-wrap: wrap;
-      }
-
-      .dod-desc {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-      }
-
-      /* features cards grid */
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 24px;
-      }
-
-      .feature-card {
-        background: var(--card-bg);
-        border-radius: var(--border-radius-md);
-        padding: 24px;
-        box-shadow: var(--card-shadow);
-        border: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .feature-card:hover {
-        border-color: var(--accent-blue);
-        box-shadow: var(--card-shadow-hover);
-      }
-
-      .feature-icon-box {
-        width: 46px;
-        height: 46px;
-        border-radius: var(--border-radius-sm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 4px;
-      }
-
-      /* icon box colors */
-      .feat-blue { background: #e0f2fe; }
-      .feat-teal { background: #ccfbf1; }
-      .feat-coral { background: #ffedd5; }
-
-      .feature-card h3 {
-        font-size: 1.1rem;
-      }
-
-      .feature-card p {
-        color: var(--text-muted);
-        font-size: 0.88rem;
-        flex: 1;
-      }
-
-      .feature-link {
-        font-weight: 700;
-        font-size: 0.88rem;
-        color: var(--accent-blue);
-        display: inline-block;
-        margin-top: 6px;
-      }
-
-      /* mobile hero */
-      @media screen and (max-width: 768px) {
-        .hero {
-          grid-template-columns: 1fr;
-          text-align: center;
-          padding: 30px 0;
-          gap: 24px;
-        }
-        .hero-title { font-size: 2rem; }
-        .dod-card { grid-template-columns: 1fr; }
-        .dod-img { min-height: 200px; height: 200px; }
-        .dod-content { padding: 20px; }
-        .dod-title { font-size: 1.5rem; }
-        .hero-img { height: 280px; }
-      }
-    </style>
+    <!-- home page specific styles removed -->
   </head>
   <body>
     <!-- Header Section -->
@@ -253,7 +39,7 @@
             src="./assets/icons/logo.png"
             alt="TravelNest Logo"
             class="navbar-logo"
-          />
+         >
           <span class="navbar-title">TravelNest</span>
         </a>
 
@@ -319,10 +105,10 @@
               src="assets/hero.jpg"
               alt="Beautiful lakeside landscape"
               class="hero-img"
-            />
+           >
             <div class="hero-img-overlay">
               <div class="hero-img-overlay-text">
-                <h4>Ready to wander?</h4>
+                <h2>Ready to wander?</h2>
                 <p>Explore curated locations globally.</p>
               </div>
             </div>
@@ -340,7 +126,22 @@
 
           <!-- Loaded by JS based on date -->
           <div id="dod-container">
-            <p style="text-align:center; color:var(--text-muted); padding: 30px 0;">Loading destination...</p>
+            <div class="dod-card">
+              <img src="assets/placeholder.jpg" alt="Destination of the day" class="dod-img" onerror="this.src='assets/placeholder.jpg'" id="dod-img">
+              <div class="dod-content">
+                <span class="dod-badge"> Destination of the Day</span>
+                <h3 class="dod-title" id="dod-title">Destination, Country</h3>
+                <div class="dod-meta">
+                  <span id="dod-continent">Continent</span>
+                  <span id="dod-type">TYPE</span>
+                  <span id="dod-budget">BUDGET</span>
+                </div>
+                <p class="dod-desc" id="dod-desc">Description</p>
+                <div style="margin-top: 14px;">
+                  <a href="#" id="dod-link" class="btn btn-primary">Explore Destination →</a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -443,7 +244,7 @@
                 class="footer-newsletter-input"
                 required
                 id="newsletter-email"
-              />
+             >
               <button type="submit" class="btn btn-primary btn-sm">
                 Subscribe
               </button>

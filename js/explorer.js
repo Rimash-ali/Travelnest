@@ -18,6 +18,18 @@ function setupExplorer() {
   var selectedType = 'all';
   var searchText = '';
 
+  // attach click listeners to existing cards
+  var allCards = grid ? grid.querySelectorAll('.dest-card') : [];
+  for (var i = 0; i < allCards.length; i++) {
+    (function(card) {
+      card.addEventListener('click', function() {
+        var destId = card.getAttribute('data-id');
+        var dest = findById(destId);
+        if (dest) openModal(dest);
+      });
+    })(allCards[i]);
+  }
+
   // render all cards on load
   renderCards();
 
@@ -83,66 +95,43 @@ function setupExplorer() {
   // filters data and renders destination cards
   function renderCards() {
     if (!grid) return;
-    grid.innerHTML = '';
 
-    var results = [];
+    var cards = grid.querySelectorAll('.dest-card');
+    var hasResults = false;
 
-    // go through all destinations and check filters
-    for (var i = 0; i < travelDestinations.length; i++) {
-      var d = travelDestinations[i];
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var cContinent = card.getAttribute('data-continent');
+      var cType = card.getAttribute('data-type');
+      var cName = card.getAttribute('data-name');
+      var cCountry = card.getAttribute('data-country');
 
-      var continentOk = (selectedContinent === 'all' || d.continent === selectedContinent);
-      var typeOk = (selectedType === 'all' || d.travelType === selectedType);
+      var continentOk = (selectedContinent === 'all' || cContinent === selectedContinent);
+      var typeOk = (selectedType === 'all' || cType === selectedType);
       var searchOk = (searchText === '' ||
-        d.name.toLowerCase().indexOf(searchText) !== -1 ||
-        d.country.toLowerCase().indexOf(searchText) !== -1);
+        cName.indexOf(searchText) !== -1 ||
+        cCountry.indexOf(searchText) !== -1);
 
       if (continentOk && typeOk && searchOk) {
-        results.push(d);
+        card.style.display = 'flex';
+        hasResults = true;
+      } else {
+        card.style.display = 'none';
       }
     }
 
-    // show message if nothing matched
-    if (results.length === 0) {
-      grid.innerHTML = '<div class="no-results"><h3>No Destinations Found</h3><p>Try adjusting your filters or search term.</p></div>';
-      return;
-    }
-
-    // build a card for each result
-    for (var i = 0; i < results.length; i++) {
-      var dest = results[i];
-
-      // fix path since we are inside /pages/ subfolder
-      var imgUrl = dest.image;
-      if (imgUrl.indexOf('assets') === 0) {
-        imgUrl = '../' + imgUrl;
+    var noResults = grid.querySelector('.no-results');
+    if (!hasResults) {
+      if (!noResults) {
+        var msg = document.createElement('div');
+        msg.className = 'no-results';
+        msg.innerHTML = '<h3>No Destinations Found</h3><p>Try adjusting your filters or search term.</p>';
+        grid.appendChild(msg);
+      } else {
+        noResults.style.display = 'block';
       }
-
-      var card = document.createElement('div');
-      card.className = 'dest-card';
-      card.innerHTML =
-        '<div class="dest-img-box">' +
-          '<img src="' + imgUrl + '" alt="' + dest.name + '" class="dest-card-img" onerror="this.src=\'../assets/placeholder.jpg\'">' +
-          '<span class="dest-type-badge">' + dest.travelType + '</span>' +
-        '</div>' +
-        '<div class="dest-info">' +
-          '<div class="dest-card-meta">' +
-            '<span>🌍 ' + dest.continent + '</span>' +
-            '<span>💰 ' + dest.budgetRange.toUpperCase() + '</span>' +
-          '</div>' +
-          '<h3 class="dest-card-title">' + dest.name + ', ' + dest.country + '</h3>' +
-          '<p class="dest-card-desc">' + dest.description + '</p>' +
-          '<div class="dest-card-footer"><span>View Details</span><span>→</span></div>' +
-        '</div>';
-
-      // use closure to capture dest in the loop correctly
-      (function(destination) {
-        card.addEventListener('click', function() {
-          openModal(destination);
-        });
-      })(dest);
-
-      grid.appendChild(card);
+    } else if (noResults) {
+      noResults.style.display = 'none';
     }
   }
 

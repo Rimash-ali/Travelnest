@@ -48,22 +48,28 @@ function loadDestinationOfTheDay() {
   var index = dateSum % travelDestinations.length;
   var dest = travelDestinations[index];
 
-  // simple card render
-  container.innerHTML =
-    '<div class="dod-card">' +
-      '<img src="' + dest.image + '" alt="' + dest.name + '" class="dod-img" onerror="this.src=\'assets/placeholder.jpg\'">' +
-      '<div class="dod-content">' +
-        '<span class="dod-badge"> Destination of the Day</span>' +
-        '<h3 class="dod-title">' + dest.name + ', ' + dest.country + '</h3>' +
-        '<div class="dod-meta">' +
-          '<span> ' + dest.continent + '</span>' +
-          '<span> ' + dest.travelType.toUpperCase() + '</span>' +
-          '<span> ' + dest.budgetRange.toUpperCase() + ' BUDGET</span>' +
-        '</div>' +
-        '<p class="dod-desc">' + dest.description + '</p>' +
-        '<div style="margin-top: 14px;">' +
-          '<a href="./pages/explorer.html?id=' + dest.id + '" class="btn btn-primary">Explore Destination →</a>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
+  // Update existing elements instead of overwriting innerHTML
+  var img = document.getElementById('dod-img');
+  if (img) {
+    img.src = dest.image;
+    img.alt = dest.name;
+  }
+  
+  var title = document.getElementById('dod-title');
+  if (title) title.textContent = dest.name + ', ' + dest.country;
+  
+  var continent = document.getElementById('dod-continent');
+  if (continent) continent.textContent = dest.continent;
+  
+  var type = document.getElementById('dod-type');
+  if (type) type.textContent = dest.travelType.toUpperCase();
+  
+  var budget = document.getElementById('dod-budget');
+  if (budget) budget.textContent = dest.budgetRange.toUpperCase() + ' BUDGET';
+  
+  var desc = document.getElementById('dod-desc');
+  if (desc) desc.textContent = dest.description;
+  
+  var link = document.getElementById('dod-link');
+  if (link) link.href = './pages/explorer.html?id=' + dest.id;
 }

@@ -25,15 +25,7 @@ function setupBudgetPlanner() {
   var lastCalc = null;
 
   // fill destination dropdown from data.js array
-  if (destSelect && travelDestinations) {
-    for (var i = 0; i < travelDestinations.length; i++) {
-      var dest = travelDestinations[i];
-      var opt = document.createElement('option');
-      opt.value = dest.id;
-      opt.textContent = dest.name + ' (' + dest.country + ')';
-      destSelect.appendChild(opt);
-    }
-  }
+  // (Removed - now handled directly in HTML to reduce JS complexity)
 
   // load saved plans from storage on page load
   renderSavedPlans();

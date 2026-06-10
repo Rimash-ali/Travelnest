@@ -1,0 +1,102 @@
+.support-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 60px;
+  align-items: start;
+}
+
+.feedback-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  padding: 32px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+
+/* Accordion styles */
+.faq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-item {
+  background: var(--card-bg);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+.faq-header {
+  padding: 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  color: var(--primary-color);
+  transition: background var(--transition-fast);
+}
+
+.faq-header:hover {
+  background: rgba(14, 165, 233, 0.02);
+}
+
+.faq-icon {
+  font-size: 0.9rem;
+  color: var(--accent-blue);
+  transition: transform var(--transition-smooth);
+}
+
+.faq-body {
+  max-height: 0; /* Animated collapsing */
+  overflow: hidden;
+  transition: max-height 0.25s ease-out;
+  background-color: rgba(2, 6, 23, 0.01);
+}
+
+.faq-content {
+  padding: 0 20px 20px 20px;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Open Accordion States */
+.faq-item.is-open {
+  border-color: var(--accent-blue);
+}
+
+.faq-item.is-open .faq-icon {
+  transform: rotate(180deg);
+}
+
+/* Form field validation errors visual markers */
+.form-group.has-error .form-input,
+.form-group.has-error .form-textarea {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.validation-error-msg {
+  color: #ef4444;
+  font-size: 0.78rem;
+  margin-top: 4px;
+  display: none;
+  font-weight: 600;
+}
+
+.form-group.has-error .validation-error-msg {
+  display: block;
+}
+
+@media screen and (max-width: 992px) {
+  .support-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
